@@ -1,70 +1,23 @@
 import 'package:flutter/material.dart';
 
-class ContinueReadingWidget extends StatelessWidget {
-  const ContinueReadingWidget({super.key});
+class BookCardWidget extends StatelessWidget {
+  final String title;
+  final String author;
+  final String imagePath;
+  final String progress;
+  final double rating;
+
+  const BookCardWidget({
+    super.key,
+    required this.title,
+    required this.author,
+    required this.imagePath,
+    required this.progress,
+    required this.rating,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.3,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (BuildContext context, ScrollController scrollController) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: Colors.teal,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: ListView(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Continue Reading",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildBookCard(
-                  title: "Fred the Lonely Monster",
-                  author: "By Tara Westover",
-                  imagePath: "assets/img/tolkien_tlor.png",
-                  progress: "65%",
-                  rating: 4.5,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildBookCard({
-    required String title,
-    required String author,
-    required String imagePath,
-    required String progress,
-    required double rating,
-  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
