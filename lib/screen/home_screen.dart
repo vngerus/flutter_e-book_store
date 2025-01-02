@@ -4,6 +4,7 @@ import 'package:flutter_ebook_store/widgets/book_carousel.dart';
 import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_state.dart';
+import 'package:flutter_ebook_store/screen/book_manager_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context),
       body: Stack(
         children: [
           Column(
@@ -56,13 +57,20 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.grey[200],
       leading: IconButton(
         icon: const Icon(Icons.grid_view, color: Colors.black),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BookManagerScreen(),
+            ),
+          );
+        },
       ),
       actions: [
         IconButton(

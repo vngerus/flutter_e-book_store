@@ -24,14 +24,14 @@ class EbookModel {
   factory EbookModel.fromJson(String id, Map<String, dynamic> json) {
     return EbookModel(
       id: id,
-      title: json['title'] ?? '',
-      author: json['author'] ?? '',
-      price: (json['price'] as num).toDouble(),
-      rating: (json['rating'] as num).toDouble(),
-      pages: json['pages'] ?? 0,
-      language: json['language'] ?? '',
-      description: json['description'] ?? '',
-      imagePath: json['imagePath'] ?? '',
+      title: json['title'] as String? ?? '',
+      author: json['author'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      rating: (json['rating'] as num?)?.toDouble()?.clamp(1.0, 5.0) ?? 1.0,
+      pages: (json['pages'] as num?)?.toInt() ?? 0,
+      language: json['language'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      imagePath: json['imagePath'] as String? ?? '',
     );
   }
 
