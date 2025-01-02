@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
 
-class BookDetailScreen extends StatelessWidget {
-  final String title;
-  final String author;
-  final String imagePath;
-  final double price;
-  final double rating;
-  final int pages;
-  final String language;
-  final String description;
+class BookDetailScreen extends StatefulWidget {
+  final String bookId;
 
-  const BookDetailScreen({
-    super.key,
-    required this.title,
-    required this.author,
-    required this.imagePath,
-    required this.price,
-    required this.rating,
-    required this.pages,
-    required this.language,
-    required this.description,
-  });
+  const BookDetailScreen({super.key, required this.bookId});
+
+  @override
+  State<BookDetailScreen> createState() => _BookDetailScreenState();
+}
+
+class _BookDetailScreenState extends State<BookDetailScreen> {
+  int quantity = 1;
+  bool isSaved = false;
 
   @override
   Widget build(BuildContext context) {
+    final bookData = _fetchBookData(widget.bookId);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -40,12 +33,6 @@ class BookDetailScreen extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +41,7 @@ class BookDetailScreen extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(
-                imagePath,
+                bookData['imagePath'] ?? 'assets/placeholder.png',
                 height: MediaQuery.of(context).size.height * 0.35,
                 width: MediaQuery.of(context).size.width * 0.6,
                 fit: BoxFit.cover,
@@ -70,13 +57,6 @@ class BookDetailScreen extends StatelessWidget {
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, -5),
-                  ),
-                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -84,7 +64,7 @@ class BookDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "\$$price",
+                      "\$${bookData['price'] ?? '0.0'}",
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -92,15 +72,45 @@ class BookDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            bookData['title'] ?? 'Unknown Title',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_border,
+                            color: Colors.teal,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isSaved = !isSaved;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isSaved
+                                      ? 'Book added to saved list!'
+                                      : 'Book removed from saved list!',
+                                ),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                     Text(
-                      "by $author",
+                      "by ${bookData['author'] ?? 'Unknown Author'}",
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
@@ -118,9 +128,13 @@ class BookDetailScreen extends StatelessWidget {
                         children: [
                           InfoTile(
                               label: "Rating",
-                              value: rating.toStringAsFixed(1)),
-                          InfoTile(label: "Pages", value: "$pages"),
-                          InfoTile(label: "Language", value: language),
+                              value: "${bookData['rating'] ?? '0.0'}"),
+                          InfoTile(
+                              label: "Pages",
+                              value: "${bookData['pages'] ?? '0'}"),
+                          InfoTile(
+                              label: "Language",
+                              value: bookData['language'] ?? 'Unknown'),
                         ],
                       ),
                     ),
@@ -136,7 +150,8 @@ class BookDetailScreen extends StatelessWidget {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Text(
-                          description,
+                          bookData['description'] ??
+                              'No description available.',
                           style: const TextStyle(
                             fontSize: 14,
                             height: 1.5,
@@ -144,79 +159,109 @@ class BookDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              const Text(
-                                "QTY",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () {},
-                              ),
-                              const Text(
-                                "1",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 12,
-                            ),
-                          ),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Book added to cart!"),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "Add to Cart",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Text(
+                        "QTY",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            if (quantity > 1) quantity--;
+                          });
+                        },
+                      ),
+                      Text(
+                        "$quantity",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            quantity++;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            "$quantity ${bookData['title']} added to cart!"),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Add to Cart",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Map<String, dynamic> _fetchBookData(String id) {
+    return {
+      'title': 'A Love Hate Thing',
+      'author': 'Whitney D. Grandison',
+      'imagePath': 'assets/img/tolkien_tlor.png',
+      'price': 20.0,
+      'rating': 4.5,
+      'pages': 350,
+      'language': 'English',
+      'description': 'A wonderful book about love and life...',
+    };
   }
 }
 
@@ -224,11 +269,7 @@ class InfoTile extends StatelessWidget {
   final String label;
   final String value;
 
-  const InfoTile({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const InfoTile({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

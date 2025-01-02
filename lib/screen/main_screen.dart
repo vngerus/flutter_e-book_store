@@ -23,104 +23,95 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  Color _getBackgroundColor() {
+    return selectedIndex == 0 ? Colors.teal : Colors.grey[200]!;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Column(
+    return Stack(
+      children: [
+        Container(
+          color: _getBackgroundColor(),
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: IndexedStack(
+            index: selectedIndex,
+            children: _pages,
+          ),
+          bottomNavigationBar: Container(
+            height: 70,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40),
+                topRight: Radius.circular(40),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(
-                  child: IndexedStack(index: selectedIndex, children: _pages),
+                _customBottomMenuItem(
+                  onPressed: () => onItemTapped(0),
+                  isActive: selectedIndex == 0,
+                  title: "Explore",
+                  icon: Icons.explore,
+                  activeColor: Colors.orange,
                 ),
-                Container(
-                  height: 100,
-                  color: Colors.teal,
+                _customBottomMenuItem(
+                  onPressed: () => onItemTapped(1),
+                  isActive: selectedIndex == 1,
+                  title: "Reading",
+                  icon: Icons.menu_book,
+                  activeColor: Colors.orange,
+                ),
+                _customBottomMenuItem(
+                  onPressed: () => onItemTapped(2),
+                  isActive: selectedIndex == 2,
+                  title: "Bookmark",
+                  icon: Icons.bookmark_border,
+                  activeColor: Colors.orange,
                 ),
               ],
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _customBottomMenuItem(
-                    onTap: () => onItemTapped(0),
-                    isActive: selectedIndex == 0,
-                    title: "Explore",
-                    icon: Icons.explore,
-                    activeColor: Colors.orange,
-                  ),
-                  _customBottomMenuItem(
-                    onTap: () => onItemTapped(1),
-                    isActive: selectedIndex == 1,
-                    title: "Reading",
-                    icon: Icons.menu_book,
-                    activeColor: Colors.orange,
-                  ),
-                  _customBottomMenuItem(
-                    onTap: () => onItemTapped(2),
-                    isActive: selectedIndex == 2,
-                    title: "Bookmark",
-                    icon: Icons.bookmark_border,
-                    activeColor: Colors.orange,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _customBottomMenuItem({
-    required Function() onTap,
+    required Function() onPressed,
     required bool isActive,
     required String title,
     required IconData icon,
     required Color activeColor,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? activeColor : Colors.grey,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
+    return InkWell(
+      onTap: () => onPressed(),
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
               color: isActive ? activeColor : Colors.grey,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                color: isActive ? activeColor : Colors.grey,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

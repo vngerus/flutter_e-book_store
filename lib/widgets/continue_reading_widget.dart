@@ -12,6 +12,7 @@ class ContinueReadingWidget extends StatelessWidget {
         maxChildSize: 0.8,
         builder: (BuildContext context, ScrollController scrollController) {
           return Container(
+            width: double.infinity,
             decoration: const BoxDecoration(
               color: Colors.teal,
               borderRadius: BorderRadius.only(

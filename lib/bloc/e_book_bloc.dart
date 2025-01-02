@@ -9,11 +9,11 @@ class EBookBloc extends Bloc<EBookEvent, EBookState> {
     on<LoadEBooks>((event, emit) async {
       emit(EBookLoading());
       try {
-        await Future.delayed(Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 2));
         final books = ["Libro 1", "Libro 2", "Libro 3"];
         emit(EBookLoaded(books));
       } catch (e) {
-        emit(EBookError("No se pudieron cargar los libros"));
+        emit(const EBookError("No se pudieron cargar los libros"));
       }
     });
   }
