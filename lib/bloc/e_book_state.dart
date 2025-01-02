@@ -1,28 +1,19 @@
-part of 'e_book_bloc.dart';
+import '../models/ebook_models.dart';
 
-sealed class EBookState extends Equatable {
-  const EBookState();
+abstract class EbookState {}
 
-  @override
-  List<Object> get props => [];
+class EbookInitial extends EbookState {}
+
+class EbookLoading extends EbookState {}
+
+class EbookLoaded extends EbookState {
+  final List<EbookModel> ebooks;
+
+  EbookLoaded(this.ebooks);
 }
 
-final class EBookInitial extends EBookState {}
-
-final class EBookLoading extends EBookState {}
-
-final class EBookLoaded extends EBookState {
-  final List<String> books;
-  const EBookLoaded(this.books);
-
-  @override
-  List<Object> get props => [books];
-}
-
-final class EBookError extends EBookState {
+class EbookError extends EbookState {
   final String message;
-  const EBookError(this.message);
 
-  @override
-  List<Object> get props => [message];
+  EbookError(this.message);
 }

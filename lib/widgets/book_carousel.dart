@@ -1,24 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ebook_store/screen/book_detail_screen.dart';
+import 'package:flutter_ebook_store/models/ebook_models.dart';
 
 class BookCarousel extends StatelessWidget {
-  final List<Map<String, String>> books = [
-    {
-      "title": "A Love Hate Thing",
-      "author": "Whitney D. Grandison",
-      "image": "assets/img/tolkien_tlor.png",
-    },
-    {
-      "title": "Muscle Travel",
-      "author": "Alan Trotter",
-      "image": "assets/img/tolkien_tlor.png",
-    },
-    {
-      "title": "Authority",
-      "author": "Jeff VanderMeer",
-      "image": "assets/img/tolkien_tlor.png",
-    },
-  ];
+  final List<EbookModel> books;
+
+  const BookCarousel({super.key, required this.books});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +25,14 @@ class BookCarousel extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Ver más libros"),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
                 child: const Text(
                   "Ver más",
                   style: TextStyle(
@@ -65,7 +59,7 @@ class BookCarousel extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => BookDetailScreen(
-                        bookId: 'book${index + 1}',
+                        bookId: book.id,
                       ),
                     ),
                   );
@@ -78,16 +72,24 @@ class BookCarousel extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          book["image"]!,
+                        child: Image.network(
+                          book.imagePath,
                           height: 200,
                           width: 150,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 200,
+                              width: 150,
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.error, color: Colors.red),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        book["title"]!,
+                        book.title,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -97,7 +99,7 @@ class BookCarousel extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "by ${book["author"]!}",
+                        "by ${book.author}",
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,

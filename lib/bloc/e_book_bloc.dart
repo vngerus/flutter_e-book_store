@@ -1,19 +1,30 @@
-import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dio/dio.dart';
+import '../models/ebook_models.dart';
+import 'e_book_event.dart';
+import 'e_book_state.dart';
 
-part 'e_book_event.dart';
-part 'e_book_state.dart';
+class EbookBloc extends Bloc<EbookEvent, EbookState> {
+  final Dio _dio = Dio();
 
-class EBookBloc extends Bloc<EBookEvent, EBookState> {
-  EBookBloc() : super(EBookInitial()) {
-    on<LoadEBooks>((event, emit) async {
-      emit(EBookLoading());
+  EbookBloc() : super(EbookInitial()) {
+    on<FetchEbooks>((event, emit) async {
+      emit(EbookLoading());
       try {
-        await Future.delayed(const Duration(seconds: 2));
-        final books = ["Libro 1", "Libro 2", "Libro 3"];
-        emit(EBookLoaded(books));
+        final response = await _dio.get(
+          'https://ebook-e2025-default-rtdb.firebaseio.com/books.json',
+        );
+        if (response.data != null) {
+          final booksData = (response.data as Map<String, dynamic>);
+          final ebooks = booksData.entries
+              .map((entry) => EbookModel.fromJson(entry.key, entry.value))
+              .toList();
+          emit(EbookLoaded(ebooks));
+        } else {
+          emit(EbookError("No books found."));
+        }
       } catch (e) {
-        emit(const EBookError("No se pudieron cargar los libros"));
+        emit(EbookError("Failed to fetch books: $e"));
       }
     });
   }

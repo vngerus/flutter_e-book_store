@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/widgets/book_carousel.dart';
 import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
+import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
+import 'package:flutter_ebook_store/bloc/e_book_state.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,7 +21,27 @@ class HomeScreen extends StatelessWidget {
               _buildSearchBar(),
               const SizedBox(height: 16),
               Expanded(
-                child: BookCarousel(),
+                child: BlocBuilder<EbookBloc, EbookState>(
+                  builder: (context, state) {
+                    if (state is EbookLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is EbookLoaded) {
+                      return BookCarousel(books: state.ebooks);
+                    } else if (state is EbookError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+                    return const Center(
+                      child: Text("No books available."),
+                    );
+                  },
+                ),
               ),
             ],
           ),
