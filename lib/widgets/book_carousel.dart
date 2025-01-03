@@ -59,7 +59,17 @@ class BookCarousel extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => BookDetailScreen(
-                        bookId: book.id,
+                        bookData: {
+                          'id': book.id,
+                          'title': book.title,
+                          'author': book.author,
+                          'price': book.price,
+                          'rating': book.rating,
+                          'pages': book.pages,
+                          'language': book.language,
+                          'description': book.description,
+                          'imagePath': book.imagePath,
+                        },
                       ),
                     ),
                   );

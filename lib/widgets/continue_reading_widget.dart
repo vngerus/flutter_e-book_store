@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
+import 'package:flutter_ebook_store/bloc/e_book_state.dart';
+import 'package:flutter_ebook_store/models/ebook_models.dart';
 
 class ContinueReadingWidget extends StatelessWidget {
   const ContinueReadingWidget({super.key});
@@ -6,52 +10,89 @@ class ContinueReadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.3,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (BuildContext context, ScrollController scrollController) {
-          return Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.teal,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: ListView(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
+      child: BlocBuilder<EbookBloc, EbookState>(
+        builder: (context, state) {
+          if (state is EbookLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is EbookLoaded) {
+            // Seleccionar un libro de la lista para "Continue Reading"
+            final book = state.ebooks.isNotEmpty ? state.ebooks[0] : null;
+
+            if (book == null) {
+              return const Center(
+                child: Text(
+                  "No books to continue reading.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+            }
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.3,
+              minChildSize: 0.3,
+              maxChildSize: 0.8,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.teal,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Continue Reading",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "Continue Reading",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildBookCard(
+                        title: book.title,
+                        author: book.author,
+                        imagePath: book.imagePath,
+                        progress: 0.65,
+                        rating: book.rating,
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                _buildBookCard(
-                  title: "Fred the Lonely Monster",
-                  author: "By Tara Westover",
-                  imagePath: "assets/img/tolkien_tlor.png",
-                  progress: "65%",
-                  rating: 4.5,
-                ),
-              ],
+                );
+              },
+            );
+          } else if (state is EbookError) {
+            return Center(
+              child: Text(
+                "Error: ${state.message}",
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          return const Center(
+            child: Text(
+              "Loading books...",
+              style: TextStyle(color: Colors.white),
             ),
           );
         },
@@ -63,10 +104,11 @@ class ContinueReadingWidget extends StatelessWidget {
     required String title,
     required String author,
     required String imagePath,
-    required String progress,
+    required double progress,
     required double rating,
   }) {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -83,11 +125,19 @@ class ContinueReadingWidget extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
+            child: Image.network(
               imagePath,
               height: 80,
               width: 60,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 80,
+                  width: 60,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.error, color: Colors.red),
+                );
+              },
             ),
           ),
           const SizedBox(width: 16),
@@ -115,11 +165,17 @@ class ContinueReadingWidget extends StatelessWidget {
                   children: List.generate(
                     5,
                     (index) => Icon(
-                      index < rating ? Icons.star : Icons.star_border,
+                      index < rating.round() ? Icons.star : Icons.star_border,
                       size: 16,
                       color: Colors.amber,
                     ),
                   ),
+                ),
+                const SizedBox(height: 8),
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.grey[200],
+                  color: Colors.teal,
                 ),
               ],
             ),
@@ -141,7 +197,7 @@ class ContinueReadingWidget extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  progress,
+                  "${(progress * 100).round()}%",
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

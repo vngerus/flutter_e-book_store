@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
 
-class BookDetailScreen extends StatefulWidget {
-  final String bookId;
+class BookDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> bookData;
 
-  const BookDetailScreen({super.key, required this.bookId});
-
-  @override
-  State<BookDetailScreen> createState() => _BookDetailScreenState();
-}
-
-class _BookDetailScreenState extends State<BookDetailScreen> {
-  int quantity = 1;
-  bool isSaved = false;
+  const BookDetailScreen({super.key, required this.bookData});
 
   @override
   Widget build(BuildContext context) {
-    final bookData = _fetchBookData(widget.bookId);
+    int quantity = 1;
+    bool isSaved = false;
 
     return Scaffold(
       appBar: AppBar(
@@ -40,8 +33,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                bookData['imagePath'] ?? 'assets/placeholder.png',
+              child: Image.network(
+                bookData['imagePath'] ?? 'https://via.placeholder.com/150',
                 height: MediaQuery.of(context).size.height * 0.35,
                 width: MediaQuery.of(context).size.width * 0.6,
                 fit: BoxFit.cover,
@@ -92,9 +85,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             color: Colors.teal,
                           ),
                           onPressed: () {
-                            setState(() {
-                              isSaved = !isSaved;
-                            });
+                            isSaved = !isSaved;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -127,14 +118,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           InfoTile(
-                              label: "Rating",
-                              value: "${bookData['rating'] ?? '0.0'}"),
+                            label: "Rating",
+                            value: "${bookData['rating'] ?? '0.0'}",
+                          ),
                           InfoTile(
-                              label: "Pages",
-                              value: "${bookData['pages'] ?? '0'}"),
+                            label: "Pages",
+                            value: "${bookData['pages'] ?? '0'}",
+                          ),
                           InfoTile(
-                              label: "Language",
-                              value: bookData['language'] ?? 'Unknown'),
+                            label: "Language",
+                            value: bookData['language'] ?? 'Unknown',
+                          ),
                         ],
                       ),
                     ),
@@ -190,9 +184,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       IconButton(
                         icon: const Icon(Icons.remove),
                         onPressed: () {
-                          setState(() {
-                            if (quantity > 1) quantity--;
-                          });
+                          if (quantity > 1) quantity--;
                         },
                       ),
                       Text(
@@ -206,9 +198,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () {
-                          setState(() {
-                            quantity++;
-                          });
+                          quantity++;
                         },
                       ),
                     ],
@@ -249,19 +239,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         ],
       ),
     );
-  }
-
-  Map<String, dynamic> _fetchBookData(String id) {
-    return {
-      'title': 'A Love Hate Thing',
-      'author': 'Whitney D. Grandison',
-      'imagePath': 'assets/img/tolkien_tlor.png',
-      'price': 20.0,
-      'rating': 4.5,
-      'pages': 350,
-      'language': 'English',
-      'description': 'A wonderful book about love and life...',
-    };
   }
 }
 
