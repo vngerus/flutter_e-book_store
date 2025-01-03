@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
-import 'package:flutter_ebook_store/bloc/e_book_event.dart';
-import 'package:flutter_ebook_store/bloc/e_book_state.dart';
+import '../bloc/e_book_bloc.dart';
+import '../bloc/e_book_event.dart';
+import '../bloc/e_book_state.dart';
 
 class BookManagerScreen extends StatelessWidget {
   const BookManagerScreen({super.key});
@@ -31,9 +31,7 @@ class BookManagerScreen extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          _editBook(context, book);
-                        },
+                        onPressed: () => _editBook(context, book),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
@@ -58,9 +56,7 @@ class BookManagerScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _addBook(context);
-        },
+        onPressed: () => _addBook(context),
         child: const Icon(Icons.add),
         backgroundColor: Colors.teal,
       ),
@@ -79,7 +75,6 @@ class BookManagerScreen extends StatelessWidget {
         String language = '';
         String description = '';
         String imagePath = '';
-
         return AlertDialog(
           title: const Text("Add New Book"),
           content: SingleChildScrollView(
@@ -89,9 +84,8 @@ class BookManagerScreen extends StatelessWidget {
                 _buildTextField("Title", (value) => title = value),
                 _buildTextField("Author", (value) => author = value),
                 _buildNumberField("Price", (value) => price = value),
-                _buildNumberField("Rating (1-5)", (value) => rating = value,
-                    min: 1, max: 5),
-                _buildNumberField("Pages", (value) => pages = value, min: 1),
+                _buildNumberField("Rating (1-5)", (value) => rating = value),
+                _buildNumberField("Pages", (value) => pages = value),
                 _buildTextField("Language", (value) => language = value),
                 _buildTextField("Description", (value) => description = value),
                 _buildTextField("Image URL", (value) => imagePath = value),
@@ -100,9 +94,7 @@ class BookManagerScreen extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text("Cancel"),
             ),
             ElevatedButton(
@@ -110,9 +102,9 @@ class BookManagerScreen extends StatelessWidget {
                 context.read<EbookBloc>().add(AddEbook(
                       title: title,
                       author: author,
-                      price: double.parse(price),
-                      rating: double.parse(rating),
-                      pages: int.parse(pages),
+                      price: double.tryParse(price) ?? 0.0,
+                      rating: double.tryParse(rating)?.clamp(1.0, 5.0) ?? 1.0,
+                      pages: int.tryParse(pages) ?? 0,
                       language: language,
                       description: description,
                       imagePath: imagePath,
@@ -139,7 +131,6 @@ class BookManagerScreen extends StatelessWidget {
         String language = book.language;
         String description = book.description;
         String imagePath = book.imagePath;
-
         return AlertDialog(
           title: const Text("Edit Book"),
           content: SingleChildScrollView(
@@ -148,12 +139,9 @@ class BookManagerScreen extends StatelessWidget {
               children: [
                 _buildTextField("Title", (value) => title = value, title),
                 _buildTextField("Author", (value) => author = value, author),
-                _buildNumberField("Price", (value) => price = value,
-                    initialValue: price),
-                _buildNumberField("Rating (1-5)", (value) => rating = value,
-                    initialValue: rating, min: 1, max: 5),
-                _buildNumberField("Pages", (value) => pages = value,
-                    initialValue: pages, min: 1),
+                _buildNumberField("Price", (value) => price = value, price),
+                _buildNumberField("Rating", (value) => rating = value, rating),
+                _buildNumberField("Pages", (value) => pages = value, pages),
                 _buildTextField(
                     "Language", (value) => language = value, language),
                 _buildTextField(
@@ -165,9 +153,7 @@ class BookManagerScreen extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text("Cancel"),
             ),
             ElevatedButton(
@@ -176,9 +162,9 @@ class BookManagerScreen extends StatelessWidget {
                       id: book.id,
                       title: title,
                       author: author,
-                      price: double.parse(price),
-                      rating: double.parse(rating),
-                      pages: int.parse(pages),
+                      price: double.tryParse(price) ?? 0.0,
+                      rating: double.tryParse(rating)?.clamp(1.0, 5.0) ?? 1.0,
+                      pages: int.tryParse(pages) ?? 0,
                       language: language,
                       description: description,
                       imagePath: imagePath,
@@ -203,18 +189,10 @@ class BookManagerScreen extends StatelessWidget {
   }
 
   Widget _buildNumberField(String label, Function(String) onChanged,
-      {String? initialValue, int? min, int? max}) {
+      [String initialValue = '']) {
     return TextField(
-      onChanged: (value) {
-        final parsedValue = double.tryParse(value) ?? 0.0;
-        if (min != null && max != null) {
-          final clampedValue = parsedValue.clamp(min, max);
-          onChanged(clampedValue.toString());
-        } else {
-          onChanged(parsedValue.toString());
-        }
-      },
       keyboardType: TextInputType.number,
+      onChanged: onChanged,
       decoration: InputDecoration(labelText: label),
       controller: TextEditingController(text: initialValue),
     );

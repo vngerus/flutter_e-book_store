@@ -41,7 +41,7 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
         'title': event.title,
         'author': event.author,
         'price': event.price,
-        'rating': event.rating,
+        'rating': event.rating.clamp(1.0, 5.0),
         'pages': event.pages,
         'language': event.language,
         'description': event.description,
