@@ -77,3 +77,5 @@ class UpdateCartItem extends EbookEvent {
 }
 
 class ClearCart extends EbookEvent {}
+
+class LoadCart extends EbookEvent {}

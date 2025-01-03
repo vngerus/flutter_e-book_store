@@ -15,14 +15,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
+        BlocProvider<EbookBloc>(
           create: (_) => EbookBloc()..add(FetchEbooks()),
         ),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         title: 'E-Book Store',
         debugShowCheckedModeBanner: false,
-        home: MainScreen(),
+        theme: ThemeData(
+          primarySwatch: Colors.teal,
+        ),
+        home: const MainScreen(),
       ),
     );
   }

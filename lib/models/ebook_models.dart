@@ -54,4 +54,18 @@ class CartItem {
   int quantity;
 
   CartItem({required this.book, this.quantity = 1});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'book': book.toJson(),
+      'quantity': quantity,
+    };
+  }
+
+  factory CartItem.fromJson(Map<String, dynamic> json) {
+    return CartItem(
+      book: EbookModel.fromJson('', json['book']),
+      quantity: json['quantity'] as int,
+    );
+  }
 }

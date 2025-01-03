@@ -16,6 +16,9 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
     on<AddToCart>(_onAddToCart);
     on<UpdateCartItem>(_onUpdateCartItem);
     on<ClearCart>(_onClearCart);
+    on<LoadCart>(_onLoadCart);
+
+    _loadCartFromFirebase();
   }
 
   Future<void> _onFetchEbooks(
@@ -108,6 +111,7 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
       _cart.add(CartItem(book: event.book, quantity: event.quantity));
     }
 
+    _saveCartToFirebase();
     emit(CartState(List.from(_cart)));
   }
 
@@ -123,11 +127,47 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
       _cart.remove(item);
     }
 
+    _saveCartToFirebase();
     emit(CartState(List.from(_cart)));
   }
 
   void _onClearCart(ClearCart event, Emitter<EbookState> emit) {
     _cart.clear();
+    _saveCartToFirebase();
     emit(CartState(List.from(_cart)));
+  }
+
+  Future<void> _onLoadCart(LoadCart event, Emitter<EbookState> emit) async {
+    await _loadCartFromFirebase();
+  }
+
+  Future<void> _saveCartToFirebase() async {
+    final cartData = {
+      for (int i = 0; i < _cart.length; i++) i.toString(): _cart[i].toJson()
+    };
+    await _dio.put(
+      'https://ebook-e2025-default-rtdb.firebaseio.com/cart.json',
+      data: cartData,
+    );
+  }
+
+  Future<void> _loadCartFromFirebase() async {
+    try {
+      final response = await _dio.get(
+        'https://ebook-e2025-default-rtdb.firebaseio.com/cart.json',
+      );
+
+      if (response.data != null) {
+        final cartData = (response.data as Map<String, dynamic>)
+            .entries
+            .map((entry) => CartItem.fromJson(entry.value))
+            .toList();
+        _cart.clear();
+        _cart.addAll(cartData);
+        emit(CartState(List.from(_cart)));
+      }
+    } catch (e) {
+      emit(EbookError("Failed to load cart: $e"));
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ebook_store/bloc/e_book_event.dart';
 import 'package:flutter_ebook_store/widgets/book_carousel.dart';
 import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
@@ -7,8 +8,19 @@ import 'package:flutter_ebook_store/bloc/e_book_state.dart';
 import 'package:flutter_ebook_store/screen/book_manager_screen.dart';
 import 'package:flutter_ebook_store/screen/shopping_cart_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<EbookBloc>().add(FetchEbooks());
+  }
 
   @override
   Widget build(BuildContext context) {
