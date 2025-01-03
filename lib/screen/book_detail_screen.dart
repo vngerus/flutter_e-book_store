@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ebook_store/models/ebook_models.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
-import 'shopping_cart_screen.dart';
+import '../bloc/e_book_bloc.dart';
+import '../bloc/e_book_event.dart';
+import '../bloc/e_book_state.dart';
+import '../models/ebook_models.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> bookData;
@@ -16,7 +19,45 @@ class BookDetailScreen extends StatefulWidget {
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
   int quantity = 1;
-  bool isSaved = false;
+  late bool isSaved;
+  late StreamSubscription _blocSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final ebookBloc = context.read<EbookBloc>();
+    final bookId = widget.bookData['id'];
+
+    if (ebookBloc.state is EbookLoaded) {
+      final books = (ebookBloc.state as EbookLoaded).ebooks;
+      final book = books.firstWhere((ebook) => ebook.id == bookId,
+          orElse: () => EbookModel.empty());
+      isSaved = book.isBookmarked;
+    } else {
+      isSaved = widget.bookData['isBookmarked'] as bool? ?? false;
+    }
+
+    _blocSubscription = ebookBloc.stream.listen((state) {
+      if (state is EbookLoaded) {
+        final book = state.ebooks.firstWhere(
+          (ebook) => ebook.id == bookId,
+          orElse: () => EbookModel.empty(),
+        );
+        if (mounted) {
+          setState(() {
+            isSaved = book.isBookmarked;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _blocSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +141,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             setState(() {
                               isSaved = !isSaved;
                             });
+                            context.read<EbookBloc>().add(
+                                  ToggleBookmark(bookId: widget.bookData['id']),
+                                );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -245,14 +289,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             language: bookData['language'],
                             description: bookData['description'],
                             imagePath: bookData['imagePath'],
+                            isBookmarked: isSaved,
                           ),
                           quantity: quantity,
                         ));
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ShoppingCartScreen(),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Book added to cart!"),
                       ),
                     );
                   },

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
-import '../models/ebook_models.dart';
+import 'package:flutter_ebook_store/models/cart_models.dart';
+
 import 'cart_event.dart';
 import 'cart_state.dart';
 
@@ -86,6 +87,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         _cart.clear();
         _cart.addAll(cartData);
         emit(CartLoaded(List.from(_cart)));
+      } else {
+        emit(CartLoaded([]));
       }
     } catch (e) {
       emit(CartError("Failed to load cart: $e"));

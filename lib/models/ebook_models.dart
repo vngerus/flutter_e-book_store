@@ -8,7 +8,7 @@ class EbookModel {
   final String language;
   final String description;
   final String imagePath;
-  final bool isBookmarked; // Campo agregado
+  final bool isBookmarked;
 
   EbookModel({
     required this.id,
@@ -23,19 +23,44 @@ class EbookModel {
     this.isBookmarked = false,
   });
 
-  factory EbookModel.fromJson(String id, Map<String, dynamic> json) {
+  factory EbookModel.empty() {
     return EbookModel(
-      id: id,
-      title: json['title'] as String? ?? '',
-      author: json['author'] as String? ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      rating: (json['rating'] as num?)?.toDouble() ?? 1.0,
-      pages: (json['pages'] as num?)?.toInt() ?? 0,
-      language: json['language'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      imagePath: json['imagePath'] as String? ?? '',
-      isBookmarked: json['isBookmarked'] as bool? ??
-          false, // Recuperar el estado de bookmark
+      id: '',
+      title: '',
+      author: '',
+      price: 0.0,
+      rating: 0.0,
+      pages: 0,
+      language: '',
+      description: '',
+      imagePath: '',
+      isBookmarked: false,
+    );
+  }
+
+  EbookModel copyWith({
+    String? id,
+    String? title,
+    String? author,
+    double? price,
+    double? rating,
+    int? pages,
+    String? language,
+    String? description,
+    String? imagePath,
+    bool? isBookmarked,
+  }) {
+    return EbookModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      price: price ?? this.price,
+      rating: rating ?? this.rating,
+      pages: pages ?? this.pages,
+      language: language ?? this.language,
+      description: description ?? this.description,
+      imagePath: imagePath ?? this.imagePath,
+      isBookmarked: isBookmarked ?? this.isBookmarked,
     );
   }
 
@@ -53,51 +78,18 @@ class EbookModel {
     };
   }
 
-  EbookModel copyWith({
-    String? title,
-    String? author,
-    double? price,
-    double? rating,
-    int? pages,
-    String? language,
-    String? description,
-    String? imagePath,
-    bool? isBookmarked,
-  }) {
+  factory EbookModel.fromJson(String id, Map<String, dynamic> json) {
     return EbookModel(
       id: id,
-      title: title ?? this.title,
-      author: author ?? this.author,
-      price: price ?? this.price,
-      rating: rating ?? this.rating,
-      pages: pages ?? this.pages,
-      language: language ?? this.language,
-      description: description ?? this.description,
-      imagePath: imagePath ?? this.imagePath,
-      isBookmarked: isBookmarked ?? this.isBookmarked,
-    );
-  }
-}
-
-class CartItem {
-  final EbookModel book;
-  int quantity;
-
-  CartItem({required this.book, this.quantity = 1});
-
-  Map<String, dynamic> toJson() {
-    return {
-      'book': book.toJson(),
-      'quantity': quantity,
-    };
-  }
-
-  factory CartItem.fromJson(Map<String, dynamic> json) {
-    final bookData = json['book'] as Map<String, dynamic>;
-    final bookId = bookData['id'] ?? '';
-    return CartItem(
-      book: EbookModel.fromJson(bookId, bookData),
-      quantity: json['quantity'] as int,
+      title: json['title'] as String? ?? '',
+      author: json['author'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      rating: (json['rating'] as num?)?.toDouble() ?? 1.0,
+      pages: (json['pages'] as num?)?.toInt() ?? 0,
+      language: json['language'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      imagePath: json['imagePath'] as String? ?? '',
+      isBookmarked: json['isBookmarked'] as bool? ?? false,
     );
   }
 }

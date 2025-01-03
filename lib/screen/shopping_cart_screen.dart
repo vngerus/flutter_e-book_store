@@ -16,8 +16,21 @@ class ShoppingCartScreen extends StatelessWidget {
       ),
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
-          if (state is CartLoaded) {
+          if (state is CartLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is CartLoaded) {
             final cartItems = state.cartItems;
+
+            if (cartItems.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No items in the cart.",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            }
 
             return Column(
               children: [
@@ -27,13 +40,16 @@ class ShoppingCartScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cartItem = cartItems[index];
                       return ListTile(
-                        leading: Image.network(
-                          cartItem.book.imagePath,
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error, color: Colors.red),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            cartItem.book.imagePath,
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.error, color: Colors.red),
+                          ),
                         ),
                         title: Text(cartItem.book.title),
                         subtitle: Text(
