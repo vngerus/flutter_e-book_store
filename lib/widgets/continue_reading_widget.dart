@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_state.dart';
-import 'package:flutter_ebook_store/models/ebook_models.dart';
 
 class ContinueReadingWidget extends StatelessWidget {
   const ContinueReadingWidget({super.key});
@@ -17,7 +16,6 @@ class ContinueReadingWidget extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (state is EbookLoaded) {
-            // Seleccionar un libro de la lista para "Continue Reading"
             final book = state.ebooks.isNotEmpty ? state.ebooks[0] : null;
 
             if (book == null) {

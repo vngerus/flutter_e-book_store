@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ebook_store/models/ebook_models.dart';
+import '../bloc/e_book_bloc.dart';
+import '../bloc/e_book_event.dart';
+import 'shopping_cart_screen.dart';
 
-class BookDetailScreen extends StatelessWidget {
+class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> bookData;
 
   const BookDetailScreen({super.key, required this.bookData});
 
   @override
+  State<BookDetailScreen> createState() => _BookDetailScreenState();
+}
+
+class _BookDetailScreenState extends State<BookDetailScreen> {
+  int quantity = 1;
+  bool isSaved = false;
+
+  @override
   Widget build(BuildContext context) {
-    int quantity = 1;
-    bool isSaved = false;
+    final bookData = widget.bookData;
 
     return Scaffold(
       appBar: AppBar(
@@ -85,7 +97,9 @@ class BookDetailScreen extends StatelessWidget {
                             color: Colors.teal,
                           ),
                           onPressed: () {
-                            isSaved = !isSaved;
+                            setState(() {
+                              isSaved = !isSaved;
+                            });
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -184,7 +198,9 @@ class BookDetailScreen extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.remove),
                         onPressed: () {
-                          if (quantity > 1) quantity--;
+                          setState(() {
+                            if (quantity > 1) quantity--;
+                          });
                         },
                       ),
                       Text(
@@ -198,7 +214,9 @@ class BookDetailScreen extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () {
-                          quantity++;
+                          setState(() {
+                            quantity++;
+                          });
                         },
                       ),
                     ],
@@ -216,11 +234,25 @@ class BookDetailScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            "$quantity ${bookData['title']} added to cart!"),
-                        duration: const Duration(seconds: 2),
+                    context.read<EbookBloc>().add(AddToCart(
+                          book: EbookModel(
+                            id: bookData['id'],
+                            title: bookData['title'],
+                            author: bookData['author'],
+                            price: bookData['price'],
+                            rating: bookData['rating'],
+                            pages: bookData['pages'],
+                            language: bookData['language'],
+                            description: bookData['description'],
+                            imagePath: bookData['imagePath'],
+                          ),
+                          quantity: quantity,
+                        ));
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ShoppingCartScreen(),
                       ),
                     );
                   },

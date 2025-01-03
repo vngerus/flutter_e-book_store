@@ -27,7 +27,7 @@ class EbookModel {
       title: json['title'] as String? ?? '',
       author: json['author'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      rating: (json['rating'] as num?)?.toDouble()?.clamp(1.0, 5.0) ?? 1.0,
+      rating: (json['rating'] as num?)?.toDouble() ?? 1.0,
       pages: (json['pages'] as num?)?.toInt() ?? 0,
       language: json['language'] as String? ?? '',
       description: json['description'] as String? ?? '',
@@ -47,4 +47,11 @@ class EbookModel {
       'imagePath': imagePath,
     };
   }
+}
+
+class CartItem {
+  final EbookModel book;
+  int quantity;
+
+  CartItem({required this.book, this.quantity = 1});
 }

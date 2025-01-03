@@ -6,12 +6,16 @@ import 'e_book_state.dart';
 
 class EbookBloc extends Bloc<EbookEvent, EbookState> {
   final Dio _dio = Dio();
+  final List<CartItem> _cart = [];
 
   EbookBloc() : super(EbookInitial()) {
     on<FetchEbooks>(_onFetchEbooks);
     on<AddEbook>(_onAddEbook);
     on<UpdateEbook>(_onUpdateEbook);
     on<DeleteEbook>(_onDeleteEbook);
+    on<AddToCart>(_onAddToCart);
+    on<UpdateCartItem>(_onUpdateCartItem);
+    on<ClearCart>(_onClearCart);
   }
 
   Future<void> _onFetchEbooks(
@@ -41,7 +45,7 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
         'title': event.title,
         'author': event.author,
         'price': event.price,
-        'rating': event.rating.clamp(1.0, 5.0),
+        'rating': event.rating,
         'pages': event.pages,
         'language': event.language,
         'description': event.description,
@@ -90,5 +94,40 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
     } catch (e) {
       emit(EbookError("Failed to delete book: $e"));
     }
+  }
+
+  void _onAddToCart(AddToCart event, Emitter<EbookState> emit) {
+    final existingItem = _cart.firstWhere(
+      (item) => item.book.id == event.book.id,
+      orElse: () => CartItem(book: event.book, quantity: 0),
+    );
+
+    if (_cart.contains(existingItem)) {
+      existingItem.quantity += event.quantity;
+    } else {
+      _cart.add(CartItem(book: event.book, quantity: event.quantity));
+    }
+
+    emit(CartState(List.from(_cart)));
+  }
+
+  void _onUpdateCartItem(UpdateCartItem event, Emitter<EbookState> emit) {
+    final item = _cart.firstWhere(
+      (item) => item.book.id == event.book.id,
+      orElse: () => CartItem(book: event.book, quantity: 0),
+    );
+
+    if (event.quantity > 0) {
+      item.quantity = event.quantity;
+    } else {
+      _cart.remove(item);
+    }
+
+    emit(CartState(List.from(_cart)));
+  }
+
+  void _onClearCart(ClearCart event, Emitter<EbookState> emit) {
+    _cart.clear();
+    emit(CartState(List.from(_cart)));
   }
 }
