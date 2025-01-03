@@ -5,6 +5,7 @@ import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_state.dart';
 import 'package:flutter_ebook_store/screen/book_manager_screen.dart';
+import 'package:flutter_ebook_store/screen/shopping_cart_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -75,7 +76,14 @@ class HomeScreen extends StatelessWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.shopping_cart, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ShoppingCartScreen(),
+              ),
+            );
+          },
         ),
         const CircleAvatar(
           backgroundColor: Colors.blue,
