@@ -13,6 +13,7 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
     on<AddEbook>(_onAddEbook);
     on<UpdateEbook>(_onUpdateEbook);
     on<DeleteEbook>(_onDeleteEbook);
+    on<ToggleBookmark>(_onToggleBookmark);
   }
 
   Future<void> _onFetchEbooks(
@@ -50,11 +51,13 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
         'language': event.language,
         'description': event.description,
         'imagePath': event.imagePath,
+        'isBookmarked': false,
       };
       await _dio.post(
         'https://ebook-e2025-default-rtdb.firebaseio.com/books.json',
         data: newBook,
       );
+
       add(FetchEbooks());
     } catch (e) {
       emit(EbookError("Failed to add book: $e"));
@@ -74,11 +77,26 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
         'description': event.description,
         'imagePath': event.imagePath,
       };
+
       await _dio.put(
         'https://ebook-e2025-default-rtdb.firebaseio.com/books/${event.id}.json',
         data: updatedBook,
       );
-      add(FetchEbooks());
+
+      final index = _ebooks.indexWhere((book) => book.id == event.id);
+      if (index != -1) {
+        _ebooks[index] = _ebooks[index].copyWith(
+          title: event.title,
+          author: event.author,
+          price: event.price,
+          rating: event.rating,
+          pages: event.pages,
+          language: event.language,
+          description: event.description,
+          imagePath: event.imagePath,
+        );
+        emit(EbookLoaded(List.from(_ebooks)));
+      }
     } catch (e) {
       emit(EbookError("Failed to update book: $e"));
     }
@@ -90,9 +108,32 @@ class EbookBloc extends Bloc<EbookEvent, EbookState> {
       await _dio.delete(
         'https://ebook-e2025-default-rtdb.firebaseio.com/books/${event.id}.json',
       );
-      add(FetchEbooks());
+
+      _ebooks.removeWhere((book) => book.id == event.id);
+      emit(EbookLoaded(List.from(_ebooks)));
     } catch (e) {
       emit(EbookError("Failed to delete book: $e"));
+    }
+  }
+
+  void _onToggleBookmark(ToggleBookmark event, Emitter<EbookState> emit) async {
+    try {
+      final index = _ebooks.indexWhere((book) => book.id == event.bookId);
+      if (index != -1) {
+        final updatedBook = _ebooks[index].copyWith(
+          isBookmarked: !_ebooks[index].isBookmarked,
+        );
+        _ebooks[index] = updatedBook;
+
+        await _dio.put(
+          'https://ebook-e2025-default-rtdb.firebaseio.com/books/${updatedBook.id}.json',
+          data: updatedBook.toJson(),
+        );
+
+        emit(EbookLoaded(List.from(_ebooks)));
+      }
+    } catch (e) {
+      emit(EbookError("Failed to toggle bookmark: $e"));
     }
   }
 }

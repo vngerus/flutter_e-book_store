@@ -8,6 +8,7 @@ class EbookModel {
   final String language;
   final String description;
   final String imagePath;
+  final bool isBookmarked; // Campo agregado
 
   EbookModel({
     required this.id,
@@ -19,6 +20,7 @@ class EbookModel {
     required this.language,
     required this.description,
     required this.imagePath,
+    this.isBookmarked = false,
   });
 
   factory EbookModel.fromJson(String id, Map<String, dynamic> json) {
@@ -32,6 +34,8 @@ class EbookModel {
       language: json['language'] as String? ?? '',
       description: json['description'] as String? ?? '',
       imagePath: json['imagePath'] as String? ?? '',
+      isBookmarked: json['isBookmarked'] as bool? ??
+          false, // Recuperar el estado de bookmark
     );
   }
 
@@ -45,7 +49,33 @@ class EbookModel {
       'language': language,
       'description': description,
       'imagePath': imagePath,
+      'isBookmarked': isBookmarked,
     };
+  }
+
+  EbookModel copyWith({
+    String? title,
+    String? author,
+    double? price,
+    double? rating,
+    int? pages,
+    String? language,
+    String? description,
+    String? imagePath,
+    bool? isBookmarked,
+  }) {
+    return EbookModel(
+      id: id,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      price: price ?? this.price,
+      rating: rating ?? this.rating,
+      pages: pages ?? this.pages,
+      language: language ?? this.language,
+      description: description ?? this.description,
+      imagePath: imagePath ?? this.imagePath,
+      isBookmarked: isBookmarked ?? this.isBookmarked,
+    );
   }
 }
 

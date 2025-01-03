@@ -53,3 +53,9 @@ class DeleteEbook extends EbookEvent {
 
   DeleteEbook(this.id);
 }
+
+class ToggleBookmark extends EbookEvent {
+  final String bookId;
+
+  ToggleBookmark({required this.bookId});
+}

@@ -17,3 +17,9 @@ class EbookError extends EbookState {
 
   EbookError(this.message);
 }
+
+class EbookBookmarkState extends EbookState {
+  final List<EbookModel> bookmarkedBooks;
+
+  EbookBookmarkState(this.bookmarkedBooks);
+}

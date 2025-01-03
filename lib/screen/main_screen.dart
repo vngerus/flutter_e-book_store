@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ebook_store/screen/bookmark_screen.dart';
 import 'package:flutter_ebook_store/screen/home_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -11,11 +12,16 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomeScreen(),
-    Center(child: Text("Reading Screen")),
-    Center(child: Text("Bookmark Screen")),
-  ];
+  final List<Widget> _pages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _pages.addAll([
+      const HomeScreen(),
+      BookmarkScreen(onBack: () => onItemTapped(0)),
+    ]);
+  }
 
   void onItemTapped(int index) {
     setState(() {
@@ -62,13 +68,6 @@ class _MainScreenState extends State<MainScreen> {
                 _customBottomMenuItem(
                   onPressed: () => onItemTapped(1),
                   isActive: selectedIndex == 1,
-                  title: "Reading",
-                  icon: Icons.menu_book,
-                  activeColor: Colors.orange,
-                ),
-                _customBottomMenuItem(
-                  onPressed: () => onItemTapped(2),
-                  isActive: selectedIndex == 2,
                   title: "Bookmark",
                   icon: Icons.bookmark_border,
                   activeColor: Colors.orange,
