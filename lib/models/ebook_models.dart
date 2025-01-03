@@ -63,8 +63,10 @@ class CartItem {
   }
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    final bookData = json['book'] as Map<String, dynamic>;
+    final bookId = bookData['id'] ?? '';
     return CartItem(
-      book: EbookModel.fromJson('', json['book']),
+      book: EbookModel.fromJson(bookId, bookData),
       quantity: json['quantity'] as int,
     );
   }

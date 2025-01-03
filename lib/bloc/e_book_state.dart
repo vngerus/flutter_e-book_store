@@ -17,12 +17,3 @@ class EbookError extends EbookState {
 
   EbookError(this.message);
 }
-
-class CartState extends EbookState {
-  final List<CartItem> cartItems;
-
-  CartState(this.cartItems);
-
-  double get totalPrice => cartItems.fold(
-      0.0, (total, item) => total + (item.book.price * item.quantity));
-}

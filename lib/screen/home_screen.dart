@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ebook_store/bloc/e_book_event.dart';
 import 'package:flutter_ebook_store/widgets/book_carousel.dart';
 import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
@@ -16,12 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<EbookBloc>().add(FetchEbooks());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

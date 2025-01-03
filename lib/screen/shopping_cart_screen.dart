@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/e_book_bloc.dart';
-import '../bloc/e_book_event.dart';
-import '../bloc/e_book_state.dart';
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_event.dart';
+import '../bloc/cart_state.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
   const ShoppingCartScreen({super.key});
@@ -14,9 +14,9 @@ class ShoppingCartScreen extends StatelessWidget {
         title: const Text("Carro de compras"),
         backgroundColor: Colors.teal,
       ),
-      body: BlocBuilder<EbookBloc, EbookState>(
+      body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
-          if (state is CartState) {
+          if (state is CartLoaded) {
             final cartItems = state.cartItems;
 
             return Column(
@@ -47,12 +47,12 @@ class ShoppingCartScreen extends StatelessWidget {
                                   color: Colors.red),
                               onPressed: () {
                                 if (cartItem.quantity > 1) {
-                                  context.read<EbookBloc>().add(UpdateCartItem(
+                                  context.read<CartBloc>().add(UpdateCartItem(
                                         book: cartItem.book,
                                         quantity: cartItem.quantity - 1,
                                       ));
                                 } else {
-                                  context.read<EbookBloc>().add(
+                                  context.read<CartBloc>().add(
                                         RemoveFromCart(cartItem.book),
                                       );
                                 }
@@ -67,7 +67,7 @@ class ShoppingCartScreen extends StatelessWidget {
                               icon: const Icon(Icons.add_circle,
                                   color: Colors.green),
                               onPressed: () {
-                                context.read<EbookBloc>().add(UpdateCartItem(
+                                context.read<CartBloc>().add(UpdateCartItem(
                                       book: cartItem.book,
                                       quantity: cartItem.quantity + 1,
                                     ));
@@ -107,6 +107,13 @@ class ShoppingCartScreen extends StatelessWidget {
                   child: const Text("Checkout"),
                 ),
               ],
+            );
+          } else if (state is CartError) {
+            return Center(
+              child: Text(
+                "Error: ${state.message}",
+                style: const TextStyle(color: Colors.red),
+              ),
             );
           }
 

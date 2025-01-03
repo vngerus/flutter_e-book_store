@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/models/ebook_models.dart';
-import '../bloc/e_book_bloc.dart';
-import '../bloc/e_book_event.dart';
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_event.dart';
 import 'shopping_cart_screen.dart';
 
 class BookDetailScreen extends StatefulWidget {
@@ -234,7 +234,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     ),
                   ),
                   onPressed: () {
-                    context.read<EbookBloc>().add(AddToCart(
+                    context.read<CartBloc>().add(AddToCart(
                           book: EbookModel(
                             id: bookData['id'],
                             title: bookData['title'],
