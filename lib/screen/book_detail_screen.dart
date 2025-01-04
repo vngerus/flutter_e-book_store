@@ -111,7 +111,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "\$${bookData['price'] ?? '0.0'}",
+                      "\$${(bookData['price'] ?? 0.0).toStringAsFixed(3)}",
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

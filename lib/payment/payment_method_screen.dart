@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'payment_confirmation_screen.dart';
+import '../models/ebook_models.dart';
 
 class PaymentMethodScreen extends StatelessWidget {
-  const PaymentMethodScreen({super.key});
+  final List<EbookModel> purchasedBooks;
+  final Function(List<EbookModel>) onPurchaseComplete;
+
+  const PaymentMethodScreen({
+    super.key,
+    required this.purchasedBooks,
+    required this.onPurchaseComplete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +37,7 @@ class PaymentMethodScreen extends StatelessWidget {
               leading: const Icon(Icons.credit_card, color: Colors.teal),
               title: const Text("Credit/Debit Card"),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PaymentConfirmationScreen(
-                      purchasedBooks: [],
-                    ),
-                  ),
-                );
+                _navigateToConfirmation(context);
               },
             ),
             ListTile(
@@ -44,31 +45,29 @@ class PaymentMethodScreen extends StatelessWidget {
                   const Icon(Icons.account_balance_wallet, color: Colors.teal),
               title: const Text("Wallet"),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PaymentConfirmationScreen(
-                      purchasedBooks: [],
-                    ),
-                  ),
-                );
+                _navigateToConfirmation(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.paypal, color: Colors.teal),
               title: const Text("PayPal"),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PaymentConfirmationScreen(
-                      purchasedBooks: [],
-                    ),
-                  ),
-                );
+                _navigateToConfirmation(context);
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToConfirmation(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentConfirmationScreen(
+          purchasedBooks: purchasedBooks,
+          onPurchaseComplete: onPurchaseComplete,
         ),
       ),
     );

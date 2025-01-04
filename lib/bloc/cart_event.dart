@@ -25,3 +25,9 @@ class RemoveFromCart extends CartEvent {
 class ClearCart extends CartEvent {}
 
 class LoadCart extends CartEvent {}
+
+class CompletePurchase extends CartEvent {
+  final List<EbookModel> purchasedBooks;
+
+  CompletePurchase(this.purchasedBooks);
+}

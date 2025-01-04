@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_state.dart';
+import 'package:flutter_ebook_store/screen/reading_detail_screen.dart';
 
 class ContinueReadingWidget extends StatelessWidget {
   const ContinueReadingWidget({super.key});
@@ -16,16 +17,9 @@ class ContinueReadingWidget extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (state is EbookLoaded) {
-            final book = state.ebooks.isNotEmpty ? state.ebooks[0] : null;
-
-            if (book == null) {
-              return const Center(
-                child: Text(
-                  "No books to continue reading.",
-                  style: TextStyle(color: Colors.white),
-                ),
-              );
-            }
+            final readingBooks =
+                state.ebooks.where((book) => book.progress > 0).toList();
+            final book = readingBooks.isNotEmpty ? readingBooks[0] : null;
 
             return DraggableScrollableSheet(
               initialChildSize: 0.3,
@@ -66,13 +60,32 @@ class ContinueReadingWidget extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _buildBookCard(
-                        title: book.title,
-                        author: book.author,
-                        imagePath: book.imagePath,
-                        progress: 0.65,
-                        rating: book.rating,
-                      ),
+                      if (book == null)
+                        const Center(
+                          child: Text(
+                            "No books to continue reading.",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      else
+                        _buildBookCard(
+                          title: book.title,
+                          author: book.author,
+                          imagePath: book.imagePath,
+                          progress: book.progress,
+                          rating: book.rating,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReadingDetailScreen(
+                                  book: book,
+                                  onProgressUpdated: (double) {},
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                     ],
                   ),
                 );
@@ -104,108 +117,112 @@ class ContinueReadingWidget extends StatelessWidget {
     required String imagePath,
     required double progress,
     required double rating,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              imagePath,
-              height: 80,
-              width: 60,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 80,
-                  width: 60,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.error, color: Colors.red),
-                );
-              },
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  author,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: List.generate(
-                    5,
-                    (index) => Icon(
-                      index < rating.round() ? Icons.star : Icons.star_border,
-                      size: 16,
-                      color: Colors.amber,
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imagePath,
+                height: 80,
+                width: 60,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 80,
+                    width: 60,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.error, color: Colors.red),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: Colors.grey[200],
-                  color: Colors.teal,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 50,
-            width: 50,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 5,
+                  const SizedBox(height: 4),
+                  Text(
+                    author,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: List.generate(
+                      5,
+                      (index) => Icon(
+                        index < rating.round() ? Icons.star : Icons.star_border,
+                        size: 16,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey[200],
+                    color: Colors.teal,
                   ),
                 ],
               ),
-              child: Center(
-                child: Text(
-                  "${(progress * 100).round()}%",
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+            ),
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    "${(progress * 100).round()}%",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

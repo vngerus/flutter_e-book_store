@@ -4,8 +4,13 @@ import 'reading_detail_screen.dart';
 
 class ReadingScreen extends StatefulWidget {
   final List<EbookModel> purchasedBooks;
+  final VoidCallback onBackToExplore;
 
-  const ReadingScreen({super.key, required this.purchasedBooks});
+  const ReadingScreen({
+    super.key,
+    required this.purchasedBooks,
+    required this.onBackToExplore,
+  });
 
   @override
   _ReadingScreenState createState() => _ReadingScreenState();
@@ -21,6 +26,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
         centerTitle: true,
         title: const Text("Reading"),
         backgroundColor: Colors.teal,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: widget.onBackToExplore,
+        ),
       ),
       body: widget.purchasedBooks.isEmpty
           ? const Center(
@@ -112,6 +121,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               MaterialPageRoute(
                                 builder: (context) => ReadingDetailScreen(
                                   book: book,
+                                  onProgressUpdated: (double) {},
                                 ),
                               ),
                             );
@@ -128,7 +138,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             ),
                           ),
                           child: Text(
-                            isReading ? "Leyendo" : "Iniciar lectura",
+                            isReading ? "Resume" : "Read",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

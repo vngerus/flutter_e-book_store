@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ebook_store/payment/payment_method_screen.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
 import '../bloc/cart_state.dart';
+import '../models/ebook_models.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
-  const ShoppingCartScreen({super.key});
+  final Function(List<EbookModel>) onPurchaseComplete;
+
+  const ShoppingCartScreen({super.key, required this.onPurchaseComplete});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class ShoppingCartScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "\$${state.totalPrice.toStringAsFixed(2)}",
+                        "\$${state.totalPrice.toStringAsFixed(3)}",
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -157,7 +159,7 @@ class ShoppingCartScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              "\$${(cartItem.book.price * cartItem.quantity).toStringAsFixed(2)}",
+                              "\$${(cartItem.book.price * cartItem.quantity).toStringAsFixed(3)}",
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -174,13 +176,21 @@ class ShoppingCartScreen extends StatelessWidget {
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navegar a la pantalla de método de pago
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PaymentMethodScreen(),
+                        final purchasedBooks =
+                            cartItems.map((cartItem) => cartItem.book).toList();
+                        context
+                            .read<CartBloc>()
+                            .add(CompletePurchase(purchasedBooks));
+
+                        onPurchaseComplete(purchasedBooks);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Purchase completed!"),
                           ),
                         );
+
+                        Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,

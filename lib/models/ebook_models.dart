@@ -9,6 +9,7 @@ class EbookModel {
   final String description;
   final String imagePath;
   final bool isBookmarked;
+  final double progress;
 
   EbookModel({
     required this.id,
@@ -21,6 +22,7 @@ class EbookModel {
     required this.description,
     required this.imagePath,
     this.isBookmarked = false,
+    this.progress = 0.0,
   });
 
   factory EbookModel.empty() {
@@ -35,6 +37,7 @@ class EbookModel {
       description: '',
       imagePath: '',
       isBookmarked: false,
+      progress: 0.0,
     );
   }
 
@@ -49,6 +52,7 @@ class EbookModel {
     String? description,
     String? imagePath,
     bool? isBookmarked,
+    double? progress,
   }) {
     return EbookModel(
       id: id ?? this.id,
@@ -61,11 +65,13 @@ class EbookModel {
       description: description ?? this.description,
       imagePath: imagePath ?? this.imagePath,
       isBookmarked: isBookmarked ?? this.isBookmarked,
+      progress: progress ?? this.progress,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'title': title,
       'author': author,
       'price': price,
@@ -75,6 +81,7 @@ class EbookModel {
       'description': description,
       'imagePath': imagePath,
       'isBookmarked': isBookmarked,
+      'progress': progress,
     };
   }
 
@@ -84,12 +91,13 @@ class EbookModel {
       title: json['title'] as String? ?? '',
       author: json['author'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      rating: (json['rating'] as num?)?.toDouble() ?? 1.0,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       pages: (json['pages'] as num?)?.toInt() ?? 0,
       language: json['language'] as String? ?? '',
       description: json['description'] as String? ?? '',
       imagePath: json['imagePath'] as String? ?? '',
       isBookmarked: json['isBookmarked'] as bool? ?? false,
+      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

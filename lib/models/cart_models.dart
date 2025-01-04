@@ -18,7 +18,7 @@ class CartItem {
     final bookId = bookData['id'] ?? '';
     return CartItem(
       book: EbookModel.fromJson(bookId, bookData),
-      quantity: json['quantity'] as int,
+      quantity: json['quantity'] as int? ?? 1,
     );
   }
 }

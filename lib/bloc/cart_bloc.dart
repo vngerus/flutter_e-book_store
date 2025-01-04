@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_ebook_store/models/cart_models.dart';
-
 import 'cart_event.dart';
 import 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   final Dio _dio = Dio();
   final List<CartItem> _cart = [];
+  final List<CartItem> _purchasedBooks = [];
 
   CartBloc() : super(CartInitial()) {
     on<AddToCart>(_onAddToCart);
@@ -15,8 +15,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<RemoveFromCart>(_onRemoveFromCart);
     on<ClearCart>(_onClearCart);
     on<LoadCart>(_onLoadCart);
+    on<CompletePurchase>(_onCompletePurchase);
 
     _loadCartFromFirebase();
+    _loadPurchasedBooksFromFirebase();
   }
 
   void _onAddToCart(AddToCart event, Emitter<CartState> emit) {
@@ -65,12 +67,33 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     await _loadCartFromFirebase();
   }
 
+  Future<void> _onCompletePurchase(
+      CompletePurchase event, Emitter<CartState> emit) async {
+    try {
+      _purchasedBooks.addAll(event.purchasedBooks.map(
+        (book) => CartItem(book: book, quantity: 1),
+      ));
+      await _savePurchasedBooksToFirebase();
+
+      _cart.clear();
+      await _saveCartToFirebase();
+
+      emit(CartLoaded(List.from(_cart)));
+    } catch (e) {
+      emit(CartError("Failed to complete purchase: $e"));
+    }
+  }
+
   Future<void> _saveCartToFirebase() async {
     final cartData = _cart.map((item) => item.toJson()).toList();
-    await _dio.put(
-      'https://ebook-e2025-default-rtdb.firebaseio.com/cart.json',
-      data: cartData,
-    );
+    try {
+      await _dio.put(
+        'https://ebook-e2025-default-rtdb.firebaseio.com/cart.json',
+        data: cartData,
+      );
+    } catch (e) {
+      emit(CartError("Failed to save cart: $e"));
+    }
   }
 
   Future<void> _loadCartFromFirebase() async {
@@ -92,6 +115,37 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       }
     } catch (e) {
       emit(CartError("Failed to load cart: $e"));
+    }
+  }
+
+  Future<void> _savePurchasedBooksToFirebase() async {
+    final purchasedData = _purchasedBooks.map((item) => item.toJson()).toList();
+    try {
+      await _dio.put(
+        'https://ebook-e2025-default-rtdb.firebaseio.com/purchasedBooks.json',
+        data: purchasedData,
+      );
+    } catch (e) {
+      emit(CartError("Failed to save purchased books: $e"));
+    }
+  }
+
+  Future<void> _loadPurchasedBooksFromFirebase() async {
+    try {
+      final response = await _dio.get(
+        'https://ebook-e2025-default-rtdb.firebaseio.com/purchasedBooks.json',
+      );
+
+      if (response.data != null) {
+        final purchasedData = (response.data as List<dynamic>)
+            .map((item) => CartItem.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        _purchasedBooks.clear();
+        _purchasedBooks.addAll(purchasedData);
+      }
+    } catch (e) {
+      emit(CartError("Failed to load purchased books: $e"));
     }
   }
 }

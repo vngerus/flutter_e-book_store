@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ebook_store/screen/bookmark_screen.dart';
 import 'package:flutter_ebook_store/screen/home_screen.dart';
+import 'package:flutter_ebook_store/screen/reading_screen.dart';
+import '../models/ebook_models.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -11,16 +13,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
+  List<EbookModel> _purchasedBooks = [];
 
-  final List<Widget> _pages = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _pages.addAll([
-      const HomeScreen(),
-      BookmarkScreen(onBack: () => onItemTapped(0)),
-    ]);
+  void _addPurchasedBooks(List<EbookModel> books) {
+    setState(() {
+      for (var book in books) {
+        if (!_purchasedBooks
+            .any((purchasedBook) => purchasedBook.id == book.id)) {
+          _purchasedBooks.add(book);
+        }
+      }
+    });
   }
 
   void onItemTapped(int index) {
@@ -30,7 +33,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Color _getBackgroundColor() {
-    return selectedIndex == 0 ? Colors.teal : Colors.grey[200]!;
+    if (selectedIndex == 0) return Colors.teal;
+    if (selectedIndex == 1) return Colors.blueGrey[50]!;
+    return Colors.grey[200]!;
   }
 
   @override
@@ -44,7 +49,14 @@ class _MainScreenState extends State<MainScreen> {
           backgroundColor: Colors.transparent,
           body: IndexedStack(
             index: selectedIndex,
-            children: _pages,
+            children: [
+              HomeScreen(onPurchaseComplete: _addPurchasedBooks),
+              ReadingScreen(
+                purchasedBooks: _purchasedBooks,
+                onBackToExplore: () => onItemTapped(0),
+              ),
+              BookmarkScreen(onBack: () => onItemTapped(0)),
+            ],
           ),
           bottomNavigationBar: Container(
             height: 70,
@@ -68,6 +80,13 @@ class _MainScreenState extends State<MainScreen> {
                 _customBottomMenuItem(
                   onPressed: () => onItemTapped(1),
                   isActive: selectedIndex == 1,
+                  title: "Reading",
+                  icon: Icons.menu_book,
+                  activeColor: Colors.orange,
+                ),
+                _customBottomMenuItem(
+                  onPressed: () => onItemTapped(2),
+                  isActive: selectedIndex == 2,
                   title: "Bookmark",
                   icon: Icons.bookmark_border,
                   activeColor: Colors.orange,
