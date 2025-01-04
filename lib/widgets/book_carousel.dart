@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ebook_store/screen/book_detail_screen.dart';
-import 'package:flutter_ebook_store/screen/more_books_screen.dart';
 import 'package:flutter_ebook_store/models/ebook_models.dart';
 
 class BookCarousel extends StatelessWidget {
@@ -27,15 +26,15 @@ class BookCarousel extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MoreBooksScreen(books: books),
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Ver más libros"),
+                      duration: Duration(seconds: 1),
                     ),
                   );
                 },
                 child: const Text(
-                  "See more",
+                  "Ver más",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
