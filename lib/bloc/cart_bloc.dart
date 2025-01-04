@@ -21,6 +21,21 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     _loadPurchasedBooksFromFirebase();
   }
 
+  List<CartItem> get purchasedBooksInProgress =>
+      _purchasedBooks.where((item) => item.progress > 0).toList();
+
+  void updateBookProgress(String bookId, double progress) {
+    final index = _purchasedBooks.indexWhere((item) => item.book.id == bookId);
+
+    if (index != -1) {
+      _purchasedBooks[index].progress = progress;
+      _savePurchasedBooksToFirebase();
+      emit(CartLoaded(List.from(_cart)));
+    } else {
+      print("Book with ID $bookId not found in purchased books.");
+    }
+  }
+
   void _onAddToCart(AddToCart event, Emitter<CartState> emit) {
     final existingItemIndex =
         _cart.indexWhere((item) => item.book.id == event.book.id);
@@ -71,7 +86,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       CompletePurchase event, Emitter<CartState> emit) async {
     try {
       _purchasedBooks.addAll(event.purchasedBooks.map(
-        (book) => CartItem(book: book, quantity: 1),
+        (book) => CartItem(book: book, quantity: 1, progress: 0.0),
       ));
       await _savePurchasedBooksToFirebase();
 
@@ -143,6 +158,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
         _purchasedBooks.clear();
         _purchasedBooks.addAll(purchasedData);
+        emit(CartLoaded(List.from(_cart)));
       }
     } catch (e) {
       emit(CartError("Failed to load purchased books: $e"));

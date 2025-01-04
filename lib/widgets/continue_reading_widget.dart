@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
-import 'package:flutter_ebook_store/bloc/e_book_state.dart';
+import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
+import 'package:flutter_ebook_store/bloc/cart_state.dart';
 import 'package:flutter_ebook_store/screen/reading_detail_screen.dart';
 
 class ContinueReadingWidget extends StatelessWidget {
@@ -10,16 +10,23 @@ class ContinueReadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: BlocBuilder<EbookBloc, EbookState>(
+      child: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
-          if (state is EbookLoading) {
+          if (state is CartLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          } else if (state is EbookLoaded) {
-            final readingBooks =
-                state.ebooks.where((book) => book.progress > 0).toList();
-            final book = readingBooks.isNotEmpty ? readingBooks[0] : null;
+          } else if (state is CartLoaded) {
+            final cartBloc = context.read<CartBloc>();
+            final readingBooks = cartBloc.purchasedBooksInProgress;
+            if (readingBooks.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No books to continue reading.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+            }
 
             return DraggableScrollableSheet(
               initialChildSize: 0.3,
@@ -60,19 +67,13 @@ class ContinueReadingWidget extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      if (book == null)
-                        const Center(
-                          child: Text(
-                            "No books to continue reading.",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
-                      else
-                        _buildBookCard(
+                      ...readingBooks.map((cartItem) {
+                        final book = cartItem.book;
+                        return _buildBookCard(
                           title: book.title,
                           author: book.author,
                           imagePath: book.imagePath,
-                          progress: book.progress,
+                          progress: cartItem.progress,
                           rating: book.rating,
                           onTap: () {
                             Navigator.push(
@@ -80,18 +81,23 @@ class ContinueReadingWidget extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => ReadingDetailScreen(
                                   book: book,
-                                  onProgressUpdated: (double) {},
+                                  onProgressUpdated: (double newProgress) {
+                                    cartItem.progress = newProgress;
+                                    context.read<CartBloc>().updateBookProgress(
+                                        book.id, newProgress);
+                                  },
                                 ),
                               ),
                             );
                           },
-                        ),
+                        );
+                      }).toList(),
                     ],
                   ),
                 );
               },
             );
-          } else if (state is EbookError) {
+          } else if (state is CartError) {
             return Center(
               child: Text(
                 "Error: ${state.message}",

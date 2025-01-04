@@ -22,8 +22,8 @@ class EbookModel {
     required this.description,
     required this.imagePath,
     this.isBookmarked = false,
-    this.progress = 0.0,
-  });
+    double progress = 0.0,
+  }) : progress = progress.clamp(0.0, 1.0);
 
   factory EbookModel.empty() {
     return EbookModel(
@@ -65,7 +65,7 @@ class EbookModel {
       description: description ?? this.description,
       imagePath: imagePath ?? this.imagePath,
       isBookmarked: isBookmarked ?? this.isBookmarked,
-      progress: progress ?? this.progress,
+      progress: (progress ?? this.progress).clamp(0.0, 1.0),
     );
   }
 
@@ -97,7 +97,7 @@ class EbookModel {
       description: json['description'] as String? ?? '',
       imagePath: json['imagePath'] as String? ?? '',
       isBookmarked: json['isBookmarked'] as bool? ?? false,
-      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
+      progress: (json['progress'] as num?)?.toDouble().clamp(0.0, 1.0) ?? 0.0,
     );
   }
 }

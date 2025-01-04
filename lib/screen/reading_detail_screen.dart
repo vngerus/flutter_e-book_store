@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 import '../models/ebook_models.dart';
+import '../bloc/cart_bloc.dart';
 
 class ReadingDetailScreen extends StatefulWidget {
   final EbookModel book;
@@ -17,18 +20,37 @@ class ReadingDetailScreen extends StatefulWidget {
 
 class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
   late double _progress;
+  Timer? _progressTimer;
 
   @override
   void initState() {
     super.initState();
     _progress = widget.book.progress;
+    _startAutoProgress();
   }
 
-  void _updateProgress(double value) {
-    setState(() {
-      _progress = value;
+  @override
+  void dispose() {
+    _progressTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAutoProgress() {
+    _progressTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_progress < 1.0) {
+          _progress += 0.01;
+          if (_progress > 1.0) {
+            _progress = 1.0;
+          }
+        } else {
+          _progress = 0.0;
+        }
+
+        widget.onProgressUpdated(_progress);
+        context.read<CartBloc>().updateBookProgress(widget.book.id, _progress);
+      });
     });
-    widget.onProgressUpdated(_progress);
   }
 
   @override
@@ -106,5 +128,14 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
         ),
       ),
     );
+  }
+
+  void _updateProgress(double value) {
+    setState(() {
+      _progress = value;
+    });
+
+    widget.onProgressUpdated(_progress);
+    context.read<CartBloc>().updateBookProgress(widget.book.id, _progress);
   }
 }
