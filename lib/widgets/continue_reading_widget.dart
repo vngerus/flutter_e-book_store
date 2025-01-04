@@ -69,6 +69,7 @@ class ContinueReadingWidget extends StatelessWidget {
                       const SizedBox(height: 16),
                       ...readingBooks.map((cartItem) {
                         final book = cartItem.book;
+                        final isCompleted = cartItem.progress >= 1.0;
                         return _buildBookCard(
                           title: book.title,
                           author: book.author,
@@ -90,6 +91,13 @@ class ContinueReadingWidget extends StatelessWidget {
                               ),
                             );
                           },
+                          onRestart: isCompleted
+                              ? () {
+                                  context
+                                      .read<CartBloc>()
+                                      .updateBookProgress(book.id, 0.0);
+                                }
+                              : null,
                         );
                       }).toList(),
                     ],
@@ -124,6 +132,7 @@ class ContinueReadingWidget extends StatelessWidget {
     required double progress,
     required double rating,
     required VoidCallback onTap,
+    VoidCallback? onRestart,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -216,13 +225,23 @@ class ContinueReadingWidget extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Text(
-                    "${(progress * 100).round()}%",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${(progress * 100).round()}%",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      if (onRestart != null)
+                        IconButton(
+                          icon: const Icon(Icons.refresh, size: 16),
+                          onPressed: onRestart,
+                        ),
+                    ],
                   ),
                 ),
               ),

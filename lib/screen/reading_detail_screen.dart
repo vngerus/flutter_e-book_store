@@ -21,12 +21,17 @@ class ReadingDetailScreen extends StatefulWidget {
 class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
   late double _progress;
   Timer? _progressTimer;
+  bool _completed = false;
 
   @override
   void initState() {
     super.initState();
     _progress = widget.book.progress;
-    _startAutoProgress();
+    _completed = _progress >= 1.0;
+
+    if (!_completed) {
+      _startAutoProgress();
+    }
   }
 
   @override
@@ -42,11 +47,11 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
       setState(() {
         if (_progress < 1.0) {
           _progress += 0.01;
-          if (_progress > 1.0) {
+          if (_progress >= 1.0) {
             _progress = 1.0;
+            _completed = true;
+            timer.cancel();
           }
-        } else {
-          timer.cancel();
         }
       });
 
@@ -122,10 +127,16 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
               max: 1,
               divisions: 100,
               label: "${(_progress * 100).round()}%",
-              onChanged: _updateProgress,
+              onChanged: _completed ? null : _updateProgress,
               activeColor: Colors.teal,
               inactiveColor: Colors.grey[300],
             ),
+            const SizedBox(height: 16),
+            if (_completed)
+              ElevatedButton(
+                onPressed: _restartReading,
+                child: const Text("Restart Reading"),
+              ),
           ],
         ),
       ),
@@ -138,6 +149,15 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
     });
 
     widget.onProgressUpdated(_progress);
+    context.read<CartBloc>().updateBookProgress(widget.book.id, _progress);
+  }
+
+  void _restartReading() {
+    setState(() {
+      _progress = 0.0;
+      _completed = false;
+    });
+    _startAutoProgress();
     context.read<CartBloc>().updateBookProgress(widget.book.id, _progress);
   }
 }
