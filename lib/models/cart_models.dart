@@ -11,6 +11,18 @@ class CartItem {
     this.progress = 0.0,
   });
 
+  CartItem copyWith({
+    EbookModel? book,
+    int? quantity,
+    double? progress,
+  }) {
+    return CartItem(
+      book: book ?? this.book,
+      quantity: quantity ?? this.quantity,
+      progress: progress ?? this.progress,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'book': book.toJson(),
@@ -25,7 +37,7 @@ class CartItem {
     return CartItem(
       book: EbookModel.fromJson(bookId, bookData),
       quantity: json['quantity'] as int? ?? 1,
-      progress: json['progress'] as double? ?? 0.0,
+      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

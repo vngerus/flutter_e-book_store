@@ -28,9 +28,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final index = _purchasedBooks.indexWhere((item) => item.book.id == bookId);
 
     if (index != -1) {
-      _purchasedBooks[index].progress = progress;
-      _savePurchasedBooksToFirebase();
-      emit(CartLoaded(List.from(_cart)));
+      _purchasedBooks[index] =
+          _purchasedBooks[index].copyWith(progress: progress);
+
+      emit(CartLoaded(List.from(_purchasedBooks)));
+
+      _savePurchasedBooksToFirebase().then((_) {
+        print("Progress updated and saved: $progress for book ID: $bookId");
+      });
     } else {
       print("Book with ID $bookId not found in purchased books.");
     }
@@ -135,12 +140,15 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Future<void> _savePurchasedBooksToFirebase() async {
     final purchasedData = _purchasedBooks.map((item) => item.toJson()).toList();
+    print("Saving purchased books: $purchasedData");
     try {
       await _dio.put(
         'https://ebook-e2025-default-rtdb.firebaseio.com/purchasedBooks.json',
         data: purchasedData,
       );
+      print("Save successful");
     } catch (e) {
+      print("Failed to save purchased books: $e");
       emit(CartError("Failed to save purchased books: $e"));
     }
   }
@@ -158,7 +166,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
         _purchasedBooks.clear();
         _purchasedBooks.addAll(purchasedData);
-        emit(CartLoaded(List.from(_cart)));
+        print("Loaded purchased books with progress: $_purchasedBooks");
+        emit(CartLoaded(List.from(_purchasedBooks)));
       }
     } catch (e) {
       emit(CartError("Failed to load purchased books: $e"));

@@ -36,6 +36,8 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
   }
 
   void _startAutoProgress() {
+    if (_progress >= 1.0) return;
+
     _progressTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_progress < 1.0) {
@@ -44,12 +46,12 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
             _progress = 1.0;
           }
         } else {
-          _progress = 0.0;
+          timer.cancel();
         }
-
-        widget.onProgressUpdated(_progress);
-        context.read<CartBloc>().updateBookProgress(widget.book.id, _progress);
       });
+
+      widget.onProgressUpdated(_progress);
+      context.read<CartBloc>().updateBookProgress(widget.book.id, _progress);
     });
   }
 

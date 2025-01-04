@@ -121,7 +121,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               MaterialPageRoute(
                                 builder: (context) => ReadingDetailScreen(
                                   book: book,
-                                  onProgressUpdated: (double) {},
+                                  onProgressUpdated: (double newProgress) {
+                                    setState(() {
+                                      widget.purchasedBooks[index] =
+                                          book.copyWith(progress: newProgress);
+                                    });
+                                  },
                                 ),
                               ),
                             );
