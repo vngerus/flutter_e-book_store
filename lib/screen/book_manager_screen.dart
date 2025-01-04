@@ -59,8 +59,8 @@ class BookManagerScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showBookForm(context),
-        child: const Icon(Icons.add),
         backgroundColor: Colors.teal,
+        child: const Icon(Icons.add),
       ),
     );
   }

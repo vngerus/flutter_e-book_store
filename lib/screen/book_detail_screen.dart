@@ -79,6 +79,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             color: Colors.black,
           ),
         ),
+        centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,7 +220,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding:
@@ -266,6 +267,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(width: 16),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,

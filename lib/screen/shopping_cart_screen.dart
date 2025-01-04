@@ -11,7 +11,8 @@ class ShoppingCartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Carro de compras"),
+        centerTitle: true,
+        title: const Text("Shopping Cart"),
         backgroundColor: Colors.teal,
       ),
       body: BlocBuilder<CartBloc, CartState>(
@@ -34,60 +35,132 @@ class ShoppingCartScreen extends StatelessWidget {
 
             return Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Total:",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "\$${state.totalPrice.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: cartItems.length,
                     itemBuilder: (context, index) {
                       final cartItem = cartItems[index];
-                      return ListTile(
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            cartItem.book.imagePath,
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.error, color: Colors.red),
-                          ),
-                        ),
-                        title: Text(cartItem.book.title),
-                        subtitle: Text(
-                          "By ${cartItem.book.author} - \$${cartItem.book.price.toStringAsFixed(2)}",
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.remove_circle,
-                                  color: Colors.red),
+                              icon: const Icon(Icons.close, color: Colors.grey),
                               onPressed: () {
-                                if (cartItem.quantity > 1) {
-                                  context.read<CartBloc>().add(UpdateCartItem(
-                                        book: cartItem.book,
-                                        quantity: cartItem.quantity - 1,
-                                      ));
-                                } else {
-                                  context.read<CartBloc>().add(
-                                        RemoveFromCart(cartItem.book),
-                                      );
-                                }
+                                context
+                                    .read<CartBloc>()
+                                    .add(RemoveFromCart(cartItem.book));
                               },
                             ),
+                            const SizedBox(width: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                cartItem.book.imagePath,
+                                height: 60,
+                                width: 60,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.error, color: Colors.red),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    cartItem.book.title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    "By ${cartItem.book.author}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.remove_circle,
+                                            color: Colors.red),
+                                        onPressed: () {
+                                          if (cartItem.quantity > 1) {
+                                            context.read<CartBloc>().add(
+                                                  UpdateCartItem(
+                                                    book: cartItem.book,
+                                                    quantity:
+                                                        cartItem.quantity - 1,
+                                                  ),
+                                                );
+                                          } else {
+                                            context.read<CartBloc>().add(
+                                                  RemoveFromCart(cartItem.book),
+                                                );
+                                          }
+                                        },
+                                      ),
+                                      Text(
+                                        "${cartItem.quantity}",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.add_circle,
+                                            color: Colors.green),
+                                        onPressed: () {
+                                          context.read<CartBloc>().add(
+                                                UpdateCartItem(
+                                                  book: cartItem.book,
+                                                  quantity:
+                                                      cartItem.quantity + 1,
+                                                ),
+                                              );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16),
                             Text(
-                              "${cartItem.quantity}",
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add_circle,
-                                  color: Colors.green),
-                              onPressed: () {
-                                context.read<CartBloc>().add(UpdateCartItem(
-                                      book: cartItem.book,
-                                      quantity: cartItem.quantity + 1,
-                                    ));
-                              },
+                              "\$${(cartItem.book.price * cartItem.quantity).toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -97,30 +170,34 @@ class ShoppingCartScreen extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "Total: \$${state.totalPrice.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Checkout functionality pending"),
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Checkout functionality pending"),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 32,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 32,
+                      child: const Text(
+                        "Checkout",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-                  child: const Text("Checkout"),
                 ),
               ],
             );
