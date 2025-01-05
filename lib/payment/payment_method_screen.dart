@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'payment_confirmation_screen.dart';
 import '../models/ebook_models.dart';
+import '../widgets/app_colors.dart';
 
 class PaymentMethodScreen extends StatelessWidget {
   final List<EbookModel> purchasedBooks;
@@ -18,8 +19,9 @@ class PaymentMethodScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Select Payment Method"),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
       ),
+      backgroundColor: AppColor.bg2,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -33,27 +35,55 @@ class PaymentMethodScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.credit_card, color: Colors.teal),
-              title: const Text("Credit/Debit Card"),
-              onTap: () {
-                _navigateToConfirmation(context);
-              },
+            _buildPaymentOption(
+              icon: Icons.credit_card,
+              label: "Credit/Debit Card",
+              context: context,
             ),
-            ListTile(
-              leading:
-                  const Icon(Icons.account_balance_wallet, color: Colors.teal),
-              title: const Text("Wallet"),
-              onTap: () {
-                _navigateToConfirmation(context);
-              },
+            const SizedBox(height: 8),
+            _buildPaymentOption(
+              icon: Icons.account_balance_wallet,
+              label: "Wallet",
+              context: context,
             ),
-            ListTile(
-              leading: const Icon(Icons.paypal, color: Colors.teal),
-              title: const Text("PayPal"),
-              onTap: () {
-                _navigateToConfirmation(context);
-              },
+            const SizedBox(height: 8),
+            _buildPaymentOption(
+              icon: Icons.paypal,
+              label: "PayPal",
+              context: context,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption({
+    required IconData icon,
+    required String label,
+    required BuildContext context,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        _navigateToConfirmation(context);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColor.bg2,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: AppColor.bg1,
+            width: 2,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColor.bg1),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),

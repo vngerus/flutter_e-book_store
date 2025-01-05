@@ -4,6 +4,7 @@ import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_event.dart';
 import 'package:flutter_ebook_store/screen/reading_screen.dart';
 import '../models/ebook_models.dart';
+import '../widgets/app_colors.dart';
 
 class PaymentConfirmationScreen extends StatelessWidget {
   final List<EbookModel> purchasedBooks;
@@ -20,58 +21,70 @@ class PaymentConfirmationScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Payment Confirmation"),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
       ),
+      backgroundColor: AppColor.bg2,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 100),
-            const SizedBox(height: 16),
-            const Text(
-              "Payment Successful!",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                context.read<CartBloc>().add(CompletePurchase(purchasedBooks));
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReadingScreen(
-                      purchasedBooks: purchasedBooks,
-                      onBackToExplore: () {
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                      },
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 24,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                "Go to My Books",
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: AppColor.bg1,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColor.bg2, width: 2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_circle, color: AppColor.bg2, size: 100),
+              const SizedBox(height: 16),
+              const Text(
+                "Payment Successful!",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  context
+                      .read<CartBloc>()
+                      .add(CompletePurchase(purchasedBooks));
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReadingScreen(
+                        purchasedBooks: purchasedBooks,
+                        onBackToExplore: () {
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.bg2,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  "Go to My Books",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColor.texto2,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

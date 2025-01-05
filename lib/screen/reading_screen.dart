@@ -4,6 +4,7 @@ import '../models/ebook_models.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_state.dart';
 import 'reading_detail_screen.dart';
+import '../widgets/app_colors.dart';
 
 class ReadingScreen extends StatelessWidget {
   final VoidCallback onBackToExplore;
@@ -20,12 +21,13 @@ class ReadingScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Reading"),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: onBackToExplore,
         ),
       ),
+      backgroundColor: AppColor.bg2,
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
@@ -50,8 +52,9 @@ class ReadingScreen extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColor.bg1,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColor.bg2, width: 2),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.2),
@@ -145,10 +148,10 @@ class ReadingScreen extends StatelessWidget {
                           ),
                           child: Text(
                             isReading ? "Resume" : "Read",
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.texto2),
                           ),
                         ),
                       ],

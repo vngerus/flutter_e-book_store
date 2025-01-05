@@ -84,7 +84,7 @@ class _MainScreenState extends State<MainScreen> {
                     icon: selectedIndex == 0
                         ? Icons.explore
                         : Icons.explore_outlined,
-                    activeColor: Colors.orange,
+                    activeColor: AppColor.coral,
                   ),
                   _customBottomMenuItem(
                     onPressed: () => onItemTapped(1),
@@ -93,7 +93,7 @@ class _MainScreenState extends State<MainScreen> {
                     iconPath: selectedIndex == 1
                         ? 'assets/icons/book-open-text.png'
                         : 'assets/icons/book-open.png',
-                    activeColor: Colors.orange,
+                    activeColor: AppColor.coral,
                   ),
                   _customBottomMenuItem(
                     onPressed: () => onItemTapped(2),
@@ -102,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
                     icon: selectedIndex == 2
                         ? Icons.bookmark
                         : Icons.bookmark_outline,
-                    activeColor: Colors.orange,
+                    activeColor: AppColor.coral,
                   ),
                 ],
               ),

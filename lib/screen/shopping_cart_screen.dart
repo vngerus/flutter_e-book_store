@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/payment/payment_method_screen.dart';
+import 'package:flutter_ebook_store/widgets/app_colors.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
 import '../bloc/cart_state.dart';
@@ -17,8 +18,9 @@ class ShoppingCartScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Shopping Cart"),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
       ),
+      backgroundColor: AppColor.bg2,
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
@@ -39,6 +41,7 @@ class ShoppingCartScreen extends StatelessWidget {
 
             return Column(
               children: [
+                const SizedBox(height: 30),
                 Expanded(
                   child: ListView.builder(
                     itemCount: cartItems.length,
@@ -53,12 +56,24 @@ class ShoppingCartScreen extends StatelessWidget {
                               .add(RemoveFromCart(cartItem.book));
                         },
                         background: Container(
-                          color: Colors.red,
+                          color: AppColor.bg3,
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                        child: Card(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.bg2,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColor.bg1, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
                           margin: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 16.0),
                           child: Padding(
@@ -108,9 +123,8 @@ class ShoppingCartScreen extends StatelessWidget {
                                           Row(
                                             children: [
                                               IconButton(
-                                                icon: const Icon(
-                                                    Icons.remove_circle,
-                                                    color: Colors.red),
+                                                icon: Icon(Icons.remove_circle,
+                                                    color: AppColor.bg3),
                                                 onPressed: cartItem.quantity > 1
                                                     ? () {
                                                         context
@@ -180,6 +194,11 @@ class ShoppingCartScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      const Divider(
+                        thickness: 2,
+                        color: Colors.grey,
+                        height: 20,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -219,7 +238,7 @@ class ShoppingCartScreen extends StatelessWidget {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
+                            backgroundColor: AppColor.bg1,
                             padding: const EdgeInsets.symmetric(
                               vertical: 16,
                             ),
@@ -227,10 +246,11 @@ class ShoppingCartScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             "Payment",
                             style: TextStyle(
                               fontSize: 18,
+                              color: AppColor.texto2,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

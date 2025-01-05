@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import '../models/ebook_models.dart';
 import '../bloc/cart_bloc.dart';
+import '../widgets/app_colors.dart';
 
 class ReadingDetailScreen extends StatefulWidget {
   final EbookModel book;
@@ -66,78 +67,103 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(widget.book.title),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
       ),
+      backgroundColor: AppColor.bg2,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.book.title,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: AppColor.bg1,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.bg2, width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.book.title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "By ${widget.book.author}",
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
+              const SizedBox(height: 8),
+              Text(
+                "By ${widget.book.author}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  widget.book.description,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    widget.book.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Progress:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Progress:",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  "${(_progress * 100).round()}%",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    "${(_progress * 100).round()}%",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.teal,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Slider(
-              value: _progress,
-              min: 0,
-              max: 1,
-              divisions: 100,
-              label: "${(_progress * 100).round()}%",
-              onChanged: _completed ? null : _updateProgress,
-              activeColor: Colors.teal,
-              inactiveColor: Colors.grey[300],
-            ),
-            const SizedBox(height: 16),
-            if (_completed)
-              ElevatedButton(
-                onPressed: _restartReading,
-                child: const Text("Restart Reading"),
+                ],
               ),
-          ],
+              Slider(
+                value: _progress,
+                min: 0,
+                max: 1,
+                divisions: 100,
+                label: "${(_progress * 100).round()}%",
+                onChanged: _completed ? null : _updateProgress,
+                activeColor: Colors.teal,
+                inactiveColor: Colors.grey[300],
+              ),
+              const SizedBox(height: 16),
+              if (_completed)
+                ElevatedButton(
+                  onPressed: _restartReading,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Restart Reading",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

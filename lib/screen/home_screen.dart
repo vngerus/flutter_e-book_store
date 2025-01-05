@@ -119,8 +119,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       top: -6,
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
+                        decoration: BoxDecoration(
+                          color: AppColor.coral,
                           shape: BoxShape.circle,
                         ),
                         constraints: const BoxConstraints(
@@ -175,10 +175,18 @@ class _HomeScreenState extends State<HomeScreen> {
           hintText: 'Search',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(color: AppColor.bg1, width: 1.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColor.bg1, width: 1.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColor.bg1, width: 2.0),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Colors.white.withOpacity(0.9),
         ),
       ),
     );

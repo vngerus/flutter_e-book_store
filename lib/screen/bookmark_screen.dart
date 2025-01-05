@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/e_book_bloc.dart';
 import '../bloc/e_book_event.dart';
 import '../bloc/e_book_state.dart';
+import '../widgets/app_colors.dart';
 
 class BookmarkScreen extends StatelessWidget {
   final VoidCallback onBack;
@@ -21,8 +22,9 @@ class BookmarkScreen extends StatelessWidget {
             onBack();
           },
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
       ),
+      backgroundColor: AppColor.bg2,
       body: BlocBuilder<EbookBloc, EbookState>(
         builder: (context, state) {
           if (state is EbookLoading) {
@@ -43,16 +45,25 @@ class BookmarkScreen extends StatelessWidget {
 
             return Center(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.only(top: 32.0, bottom: 16.0),
                 itemCount: bookmarkedBooks.length,
                 itemBuilder: (context, index) {
                   final book = bookmarkedBooks[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColor.bg2,
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColor.bg1, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -83,6 +94,7 @@ class BookmarkScreen extends StatelessWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
+                                  const SizedBox(height: 4),
                                   Text(
                                     "By ${book.author}",
                                     style: const TextStyle(
@@ -94,9 +106,9 @@ class BookmarkScreen extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.bookmark,
-                                color: Colors.green,
+                                color: AppColor.coral,
                               ),
                               onPressed: () {
                                 context

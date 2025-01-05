@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cart_bloc.dart';
@@ -7,6 +8,7 @@ import '../bloc/e_book_bloc.dart';
 import '../bloc/e_book_event.dart';
 import '../bloc/e_book_state.dart';
 import '../models/ebook_models.dart';
+import '../widgets/app_colors.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> bookData;
@@ -66,7 +68,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColor.bg1,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
@@ -80,30 +82,49 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share, color: Colors.black),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Share icon pressed (visual only)'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+          ),
+        ],
       ),
+      backgroundColor: AppColor.bg2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 16),
           Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                bookData['imagePath'] ?? 'https://via.placeholder.com/150',
-                height: MediaQuery.of(context).size.height * 0.35,
-                width: MediaQuery.of(context).size.width * 0.6,
-                fit: BoxFit.cover,
+            child: GestureDetector(
+              onTap: () => _showImagePopup(context, bookData['imagePath']),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  bookData['imagePath'] ?? 'https://via.placeholder.com/150',
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 16),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: AppColor.bg1,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
+                border: Border.all(color: AppColor.bg2, width: 2),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -136,7 +157,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         IconButton(
                           icon: Icon(
                             isSaved ? Icons.bookmark : Icons.bookmark_border,
-                            color: Colors.teal,
+                            color: AppColor.coral,
                           ),
                           onPressed: () {
                             setState(() {
@@ -170,7 +191,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: AppColor.bg2,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -226,20 +247,23 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: AppColor.bg2,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColor.bg1, width: 2),
                   ),
                   child: Row(
                     children: [
-                      const Text(
-                        "QTY",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          "QTY",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 16),
                       IconButton(
                         icon: const Icon(Icons.remove),
                         onPressed: quantity > 1
@@ -266,10 +290,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 const SizedBox(width: 16),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: AppColor.bg1,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
-                      vertical: 12,
+                      vertical: 21,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -298,12 +322,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       ),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     "Add to Cart",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColor.texto2,
                     ),
                   ),
                 ),
@@ -312,6 +336,57 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showImagePopup(BuildContext context, String? imagePath) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColor.bg1, width: 2),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        imagePath ?? 'https://via.placeholder.com/150',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.20,
+                  left: MediaQuery.of(context).size.width * 0.64,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColor.bg1, width: 2),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: AppColor.bg1),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

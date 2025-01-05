@@ -5,6 +5,7 @@ import '../bloc/e_book_bloc.dart';
 import '../bloc/e_book_event.dart';
 import '../bloc/e_book_state.dart';
 import '../models/ebook_models.dart';
+import '../widgets/app_colors.dart';
 
 class BookManagerScreen extends StatelessWidget {
   const BookManagerScreen({super.key});
@@ -14,86 +15,133 @@ class BookManagerScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Manage Books"),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
       ),
+      backgroundColor: AppColor.bg2,
       body: BlocBuilder<EbookBloc, EbookState>(
         builder: (context, state) {
           if (state is EbookLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is EbookLoaded) {
             return ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               itemCount: state.ebooks.length,
               itemBuilder: (context, index) {
                 final book = state.ebooks[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 4.0, horizontal: 16.0),
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      vertical: 8.0, horizontal: 16.0),
+                  child: Dismissible(
+                    key: Key(book.id),
+                    direction: DismissDirection.horizontal,
+                    background: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      alignment: Alignment.centerLeft,
+                      color: Colors.blue,
+                      child: const Icon(Icons.edit, color: Colors.white),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 120,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              image: DecorationImage(
-                                image: NetworkImage(book.imagePath),
-                                fit: BoxFit.cover,
+                    secondaryBackground: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      alignment: Alignment.centerRight,
+                      color: AppColor.coral,
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    confirmDismiss: (direction) async {
+                      if (direction == DismissDirection.startToEnd) {
+                        _showBookForm(context, book: book);
+                        return false; //
+                      } else if (direction == DismissDirection.endToStart) {
+                        bool confirmDelete = await _confirmDelete(context);
+                        if (confirmDelete) {
+                          context.read<EbookBloc>().add(DeleteEbook(book.id));
+                          return true;
+                        }
+                      }
+                      return false;
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColor.bg2,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppColor.bg1,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 120,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: NetworkImage(book.imagePath),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    book.title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "By ${book.author}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  book.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.blue),
+                                  onPressed: () =>
+                                      _showBookForm(context, book: book),
                                 ),
-                                Text(
-                                  "By ${book.author}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
+                                IconButton(
+                                  icon:
+                                      Icon(Icons.delete, color: AppColor.coral),
+                                  onPressed: () async {
+                                    bool confirmDelete =
+                                        await _confirmDelete(context);
+                                    if (confirmDelete) {
+                                      context
+                                          .read<EbookBloc>()
+                                          .add(DeleteEbook(book.id));
+                                    }
+                                  },
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon:
-                                    const Icon(Icons.edit, color: Colors.blue),
-                                onPressed: () =>
-                                    _showBookForm(context, book: book),
-                              ),
-                              IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  context
-                                      .read<EbookBloc>()
-                                      .add(DeleteEbook(book.id));
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -113,10 +161,31 @@ class BookManagerScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showBookForm(context),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColor.bg1,
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<bool> _confirmDelete(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Confirm Delete"),
+            content: const Text("Are you sure you want to delete this book?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Delete"),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   void _showBookForm(BuildContext context, {EbookModel? book}) {
