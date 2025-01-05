@@ -15,9 +15,19 @@ class BookmarkScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Bookmarks'),
+        title: Text(
+          'Bookmarks',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColor.texto3,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black54,
+          ),
           onPressed: () {
             onBack();
           },
@@ -87,8 +97,9 @@ class BookmarkScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     book.title,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
+                                      color: AppColor.texto3,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     maxLines: 1,
@@ -97,9 +108,9 @@ class BookmarkScreen extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     "By ${book.author}",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.grey,
+                                      color: AppColor.texto2,
                                     ),
                                   ),
                                 ],

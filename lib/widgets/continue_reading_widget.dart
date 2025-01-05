@@ -23,8 +23,8 @@ class ContinueReadingWidget extends StatelessWidget {
           }
 
           return DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            minChildSize: 0.5,
+            initialChildSize: 0.4,
+            minChildSize: 0.4,
             maxChildSize: 0.8,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
@@ -32,83 +32,89 @@ class ContinueReadingWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColor.bg1,
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
                   ),
                 ),
-                child: CustomPaint(
-                  painter: DottedBackgroundPainter(),
-                  child: ListView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: AppColor.texto2,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 40,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppColor.texto2,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "Continue Reading",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.texto2,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (state is CartLoading)
-                        const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      else if (state is CartError)
-                        Center(
-                          child: Text(
-                            "Error: ${state.message}",
-                            style: const TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: ListView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          Text(
+                            "Continue Reading",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.texto3,
+                            ),
                           ),
-                        )
-                      else if (readingBooks.isEmpty)
-                        Center(
-                          child: Text(
-                            "No books to continue reading.",
-                            style: TextStyle(color: AppColor.texto2),
-                          ),
-                        )
-                      else
-                        ...readingBooks.map((cartItem) {
-                          final book = cartItem.book;
-                          return _buildBookCard(
-                            title: book.title,
-                            author: book.author,
-                            imagePath: book.imagePath,
-                            progress: cartItem.progress,
-                            rating: book.rating,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReadingDetailScreen(
-                                    book: book,
-                                    onProgressUpdated: (double newProgress) {
-                                      context
-                                          .read<CartBloc>()
-                                          .updateBookProgress(
-                                              book.id, newProgress);
-                                    },
-                                  ),
+                          const SizedBox(height: 16),
+                          if (state is CartLoading)
+                            const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          else if (state is CartError)
+                            Center(
+                              child: Text(
+                                "Error: ${state.message}",
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            )
+                          else if (readingBooks.isEmpty)
+                            Center(
+                              child: Text(
+                                "No books to continue reading.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColor.texto2,
                                 ),
+                              ),
+                            )
+                          else
+                            ...readingBooks.map((cartItem) {
+                              final book = cartItem.book;
+                              return _buildBookCard(
+                                title: book.title,
+                                author: book.author,
+                                imagePath: book.imagePath,
+                                progress: cartItem.progress,
+                                rating: book.rating,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ReadingDetailScreen(
+                                        book: book,
+                                        onProgressUpdated:
+                                            (double newProgress) {
+                                          context
+                                              .read<CartBloc>()
+                                              .updateBookProgress(
+                                                  book.id, newProgress);
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
-                            },
-                          );
-                        }).toList(),
-                    ],
-                  ),
+                            }).toList(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
@@ -168,17 +174,20 @@ class ContinueReadingWidget extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: AppColor.texto3,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     author,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: AppColor.texto3,
                     ),
                   ),
                   const SizedBox(height: 8),

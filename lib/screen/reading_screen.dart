@@ -20,10 +20,17 @@ class ReadingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Reading"),
+        title: Text(
+          "Reading",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColor.texto3,
+          ),
+        ),
         backgroundColor: AppColor.bg1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black54),
           onPressed: onBackToExplore,
         ),
       ),
@@ -83,9 +90,10 @@ class ReadingScreen extends StatelessWidget {
                             children: [
                               Text(
                                 book.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: AppColor.texto3,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -93,9 +101,9 @@ class ReadingScreen extends StatelessWidget {
                               const SizedBox(height: 4),
                               Text(
                                 "By ${book.author}",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey,
+                                  color: AppColor.texto3,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -136,22 +144,23 @@ class ReadingScreen extends StatelessWidget {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                isReading ? Colors.grey : Colors.orange,
+                            backgroundColor: AppColor.bg1,
                             padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 16,
+                              vertical: 10,
+                              horizontal: 10,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: AppColor.bg2, width: 2),
                             ),
                           ),
                           child: Text(
                             isReading ? "Resume" : "Read",
                             style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.texto2),
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.texto2,
+                            ),
                           ),
                         ),
                       ],

@@ -70,21 +70,22 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         elevation: 0,
         backgroundColor: AppColor.bg1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black54),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: const Text(
+        title: Text(
           "Detail Book",
           style: TextStyle(
-            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            color: AppColor.texto3,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
+            icon: const Icon(Icons.share, color: Colors.black54),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -108,8 +109,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
                   bookData['imagePath'] ?? 'https://via.placeholder.com/150',
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.29,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -133,10 +134,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   children: [
                     Text(
                       "\$${(bookData['price'] ?? 0.0).toStringAsFixed(3)}",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: AppColor.coral,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -272,14 +273,15 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       ),
                       Text(
                         "$quantity",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.teal,
+                          color: AppColor.coral,
                         ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.add),
+                        color: AppColor.texto3,
                         onPressed: quantity < 5
                             ? () => setState(() => quantity++)
                             : null,

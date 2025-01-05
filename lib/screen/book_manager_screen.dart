@@ -14,8 +14,20 @@ class BookManagerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Manage Books"),
+        centerTitle: true,
+        title: Text(
+          "Manage Books",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColor.texto3,
+          ),
+        ),
         backgroundColor: AppColor.bg1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black54),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       backgroundColor: AppColor.bg2,
       body: BlocBuilder<EbookBloc, EbookState>(
@@ -49,7 +61,7 @@ class BookManagerScreen extends StatelessWidget {
                     confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {
                         _showBookForm(context, book: book);
-                        return false; //
+                        return false;
                       } else if (direction == DismissDirection.endToStart) {
                         bool confirmDelete = await _confirmDelete(context);
                         if (confirmDelete) {
@@ -97,9 +109,10 @@ class BookManagerScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     book.title,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
+                                      color: AppColor.texto3,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -107,9 +120,9 @@ class BookManagerScreen extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     "By ${book.author}",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.grey,
+                                      color: AppColor.texto2,
                                     ),
                                   ),
                                 ],

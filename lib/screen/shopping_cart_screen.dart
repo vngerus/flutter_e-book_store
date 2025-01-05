@@ -17,8 +17,19 @@ class ShoppingCartScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Shopping Cart"),
+        title: Text(
+          "Shopping Cart",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColor.texto3,
+          ),
+        ),
         backgroundColor: AppColor.bg1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black54),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       backgroundColor: AppColor.bg2,
       body: BlocBuilder<CartBloc, CartState>(
@@ -101,18 +112,19 @@ class ShoppingCartScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         cartItem.book.title,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
+                                          color: AppColor.texto3,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
                                         "By ${cartItem.book.author}",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 14,
-                                          color: Colors.grey,
+                                          color: AppColor.texto2,
                                         ),
                                       ),
                                       const SizedBox(height: 8),
@@ -123,8 +135,8 @@ class ShoppingCartScreen extends StatelessWidget {
                                           Row(
                                             children: [
                                               IconButton(
-                                                icon: Icon(Icons.remove_circle,
-                                                    color: AppColor.bg3),
+                                                icon: Icon(Icons.remove,
+                                                    color: AppColor.texto3),
                                                 onPressed: cartItem.quantity > 1
                                                     ? () {
                                                         context
@@ -143,14 +155,15 @@ class ShoppingCartScreen extends StatelessWidget {
                                               ),
                                               Text(
                                                 "${cartItem.quantity}",
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  color: AppColor.coral,
+                                                ),
                                               ),
                                               IconButton(
-                                                icon: const Icon(
-                                                    Icons.add_circle,
-                                                    color: Colors.green),
+                                                icon: Icon(Icons.add,
+                                                    color: AppColor.texto3),
                                                 onPressed: cartItem.quantity < 5
                                                     ? () {
                                                         context
@@ -170,9 +183,11 @@ class ShoppingCartScreen extends StatelessWidget {
                                             ],
                                           ),
                                           Text(
-                                            "\$${(cartItem.book.price * cartItem.quantity).toStringAsFixed(3)}",
-                                            style: const TextStyle(
+                                            _formatPrice(cartItem.book.price *
+                                                cartItem.quantity),
+                                            style: TextStyle(
                                               fontSize: 16,
+                                              color: AppColor.coral,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -202,17 +217,19 @@ class ShoppingCartScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Total",
                             style: TextStyle(
                               fontSize: 20,
+                              color: AppColor.texto3,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            "\$${state.totalPrice.toStringAsFixed(2)}",
-                            style: const TextStyle(
+                            _formatPrice(state.totalPrice),
+                            style: TextStyle(
                               fontSize: 20,
+                              color: AppColor.coral,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -276,5 +293,11 @@ class ShoppingCartScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _formatPrice(double price) {
+    return price % 1 == 0
+        ? "\$${price.toStringAsFixed(3)}"
+        : "\$${price.toStringAsFixed(2)}";
   }
 }

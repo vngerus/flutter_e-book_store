@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ebook_store/screen/book_detail_screen.dart';
 import 'package:flutter_ebook_store/models/ebook_models.dart';
 import 'package:flutter_ebook_store/screen/more_books_screen.dart';
+import 'package:flutter_ebook_store/widgets/app_colors.dart';
 
 class BookCarousel extends StatelessWidget {
   final List<EbookModel> books;
@@ -18,11 +19,12 @@ class BookCarousel extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Trending Books",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: AppColor.texto3,
                 ),
               ),
               GestureDetector(
@@ -34,13 +36,23 @@ class BookCarousel extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text(
-                  "More books",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      "More books",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColor.texto2,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: AppColor.texto2,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -99,24 +111,29 @@ class BookCarousel extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        book.title,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Text(
+                          book.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.texto3,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        "by ${book.author}",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                      Flexible(
+                        child: Text(
+                          "by ${book.author}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColor.texto2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

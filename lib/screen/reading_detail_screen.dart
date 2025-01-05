@@ -66,8 +66,24 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.book.title),
+        title: Text(
+          widget.book.title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColor.texto3,
+          ),
+        ),
         backgroundColor: AppColor.bg1,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black54,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       backgroundColor: AppColor.bg2,
       body: Padding(
@@ -84,17 +100,18 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
             children: [
               Text(
                 widget.book.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
+                  color: AppColor.texto3,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "By ${widget.book.author}",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey,
+                  color: AppColor.texto3,
                 ),
               ),
               const SizedBox(height: 16),
@@ -102,9 +119,10 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                 child: SingleChildScrollView(
                   child: Text(
                     widget.book.description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       height: 1.5,
+                      color: AppColor.texto2,
                     ),
                   ),
                 ),
@@ -113,11 +131,12 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Progress:",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: AppColor.texto3,
                     ),
                   ),
                   Text(
@@ -145,20 +164,21 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                 ElevatedButton(
                   onPressed: _restartReading,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: AppColor.bg1,
                     padding: const EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 24,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: AppColor.bg2, width: 2),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Restart Reading",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColor.texto3,
                     ),
                   ),
                 ),
