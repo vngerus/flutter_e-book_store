@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_state.dart';
 import 'package:flutter_ebook_store/models/cart_models.dart';
+import 'package:flutter_ebook_store/models/ebook_models.dart';
 import 'package:flutter_ebook_store/screen/reading_detail_screen.dart';
 import 'package:flutter_ebook_store/widgets/app_colors.dart';
 
 class ContinueReadingWidget extends StatelessWidget {
-  const ContinueReadingWidget({super.key});
+  const ContinueReadingWidget(
+      {super.key, required List<EbookModel> readingBooks});
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class ContinueReadingWidget extends StatelessWidget {
                         else if (readingBooks.isEmpty)
                           Center(
                             child: Text(
-                              "No books to continue reading.",
+                              "Sart reading books",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: AppColor.texto2,

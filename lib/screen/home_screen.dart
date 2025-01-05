@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_state.dart';
 import 'package:flutter_ebook_store/models/ebook_models.dart';
+import 'package:flutter_ebook_store/widgets/authors_carrousel_widget.dart';
 import 'package:flutter_ebook_store/widgets/book_carousel.dart';
 import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
 import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
@@ -21,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<EbookModel> readingBooks = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +48,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: CircularProgressIndicator(),
                       );
                     } else if (state is EbookLoaded) {
-                      return BookCarousel(books: state.ebooks);
+                      final List<String> authors =
+                          state.ebooks.map((e) => e.author).toSet().toList();
+                      readingBooks = state.ebooks
+                          .where((book) => book.progress > 0)
+                          .toList();
+
+                      return Column(
+                        children: [
+                          BookCarousel(books: state.ebooks),
+                          const SizedBox(height: 16),
+                          AuthorsCarrouselWidget(authors: authors),
+                        ],
+                      );
                     } else if (state is EbookError) {
                       return Center(
                         child: Text(
@@ -62,10 +77,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          const Positioned.fill(
+          Positioned.fill(
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: ContinueReadingWidget(),
+              child: ContinueReadingWidget(
+                readingBooks: readingBooks,
+              ),
             ),
           ),
         ],

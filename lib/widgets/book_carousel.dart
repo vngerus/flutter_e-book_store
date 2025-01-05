@@ -11,6 +11,8 @@ class BookCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trendingBooks = books.length > 5 ? books.sublist(0, 5) : books;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,9 +65,9 @@ class BookCarousel extends StatelessWidget {
           height: 250,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: books.length,
+            itemCount: trendingBooks.length,
             itemBuilder: (context, index) {
-              final book = books[index];
+              final book = trendingBooks[index];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
