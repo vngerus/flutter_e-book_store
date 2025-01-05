@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
 import 'package:flutter_ebook_store/bloc/cart_state.dart';
+import 'package:flutter_ebook_store/models/cart_models.dart';
 import 'package:flutter_ebook_store/screen/reading_detail_screen.dart';
+import 'package:flutter_ebook_store/widgets/app_colors.dart';
 
 class ContinueReadingWidget extends StatelessWidget {
   const ContinueReadingWidget({super.key});
@@ -12,37 +14,30 @@ class ContinueReadingWidget extends StatelessWidget {
     return SafeArea(
       child: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
-          if (state is CartLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is CartLoaded) {
-            final cartBloc = context.read<CartBloc>();
-            final readingBooks = cartBloc.purchasedBooksInProgress;
-            if (readingBooks.isEmpty) {
-              return const Center(
-                child: Text(
-                  "No books to continue reading.",
-                  style: TextStyle(color: Colors.white),
-                ),
-              );
-            }
+          List<CartItem> readingBooks = [];
 
-            return DraggableScrollableSheet(
-              initialChildSize: 0.3,
-              minChildSize: 0.3,
-              maxChildSize: 0.8,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.teal,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                    ),
+          if (state is PurchasedBooksLoaded) {
+            readingBooks = state.purchasedBooks
+                .where((item) => item.progress > 0)
+                .toList();
+          }
+
+          return DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.5,
+            maxChildSize: 0.8,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColor.bg1,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
                   ),
+                ),
+                child: CustomPaint(
+                  painter: DottedBackgroundPainter(),
                   child: ListView(
                     controller: scrollController,
                     padding: const EdgeInsets.all(16),
@@ -52,73 +47,71 @@ class ContinueReadingWidget extends StatelessWidget {
                           width: 40,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColor.texto2,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         "Continue Reading",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppColor.texto2,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      ...readingBooks.map((cartItem) {
-                        final book = cartItem.book;
-                        final isCompleted = cartItem.progress >= 1.0;
-                        return _buildBookCard(
-                          title: book.title,
-                          author: book.author,
-                          imagePath: book.imagePath,
-                          progress: cartItem.progress,
-                          rating: book.rating,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ReadingDetailScreen(
-                                  book: book,
-                                  onProgressUpdated: (double newProgress) {
-                                    cartItem.progress = newProgress;
-                                    context.read<CartBloc>().updateBookProgress(
-                                        book.id, newProgress);
-                                  },
+                      if (state is CartLoading)
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      else if (state is CartError)
+                        Center(
+                          child: Text(
+                            "Error: ${state.message}",
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        )
+                      else if (readingBooks.isEmpty)
+                        Center(
+                          child: Text(
+                            "No books to continue reading.",
+                            style: TextStyle(color: AppColor.texto2),
+                          ),
+                        )
+                      else
+                        ...readingBooks.map((cartItem) {
+                          final book = cartItem.book;
+                          return _buildBookCard(
+                            title: book.title,
+                            author: book.author,
+                            imagePath: book.imagePath,
+                            progress: cartItem.progress,
+                            rating: book.rating,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ReadingDetailScreen(
+                                    book: book,
+                                    onProgressUpdated: (double newProgress) {
+                                      context
+                                          .read<CartBloc>()
+                                          .updateBookProgress(
+                                              book.id, newProgress);
+                                    },
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                          onRestart: isCompleted
-                              ? () {
-                                  context
-                                      .read<CartBloc>()
-                                      .updateBookProgress(book.id, 0.0);
-                                }
-                              : null,
-                        );
-                      }).toList(),
+                              );
+                            },
+                          );
+                        }).toList(),
                     ],
                   ),
-                );
-              },
-            );
-          } else if (state is CartError) {
-            return Center(
-              child: Text(
-                "Error: ${state.message}",
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          return const Center(
-            child: Text(
-              "Loading books...",
-              style: TextStyle(color: Colors.white),
-            ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -132,7 +125,6 @@ class ContinueReadingWidget extends StatelessWidget {
     required double progress,
     required double rating,
     required VoidCallback onTap,
-    VoidCallback? onRestart,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -140,7 +132,7 @@ class ContinueReadingWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColor.bg2,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -204,7 +196,7 @@ class ContinueReadingWidget extends StatelessWidget {
                   LinearProgressIndicator(
                     value: progress,
                     backgroundColor: Colors.grey[200],
-                    color: Colors.teal,
+                    color: AppColor.aquagreen,
                   ),
                 ],
               ),
@@ -214,7 +206,7 @@ class ContinueReadingWidget extends StatelessWidget {
               width: 50,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColor.white,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -225,23 +217,13 @@ class ContinueReadingWidget extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${(progress * 100).round()}%",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                      if (onRestart != null)
-                        IconButton(
-                          icon: const Icon(Icons.refresh, size: 16),
-                          onPressed: onRestart,
-                        ),
-                    ],
+                  child: Text(
+                    "${(progress * 100).round()}%",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
                   ),
                 ),
               ),
@@ -251,4 +233,25 @@ class ContinueReadingWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class DottedBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColor.bg1
+      ..style = PaintingStyle.fill;
+
+    const double spacing = 3;
+    const double radius = 3;
+
+    for (double y = 0; y < size.height; y += spacing) {
+      for (double x = 0; x < size.width; x += spacing) {
+        canvas.drawCircle(Offset(x, y), radius, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

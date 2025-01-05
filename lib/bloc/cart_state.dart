@@ -15,6 +15,12 @@ class CartLoaded extends CartState {
       0.0, (total, item) => total + (item.book.price * item.quantity));
 }
 
+class PurchasedBooksLoaded extends CartState {
+  final List<CartItem> purchasedBooks;
+
+  PurchasedBooksLoaded(this.purchasedBooks);
+}
+
 class CartError extends CartState {
   final String message;
 

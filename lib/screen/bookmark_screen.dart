@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/e_book_bloc.dart';
 import '../bloc/e_book_event.dart';
 import '../bloc/e_book_state.dart';
-import 'book_detail_screen.dart';
 
 class BookmarkScreen extends StatelessWidget {
   final VoidCallback onBack;
@@ -14,7 +13,7 @@ class BookmarkScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true, // Centrar el título del AppBar
+        centerTitle: true,
         title: const Text('Bookmarks'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -50,51 +49,64 @@ class BookmarkScreen extends StatelessWidget {
                   final book = bookmarkedBooks[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListTile(
-                      leading: ClipRRect(
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          book.imagePath,
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error, color: Colors.red),
-                        ),
                       ),
-                      title: Text(book.title),
-                      subtitle: Text("By ${book.author}"),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.bookmark,
-                          color: Colors.green,
-                        ),
-                        onPressed: () {
-                          context
-                              .read<EbookBloc>()
-                              .add(ToggleBookmark(bookId: book.id));
-                        },
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BookDetailScreen(
-                              bookData: {
-                                'id': book.id,
-                                'title': book.title,
-                                'author': book.author,
-                                'price': book.price,
-                                'rating': book.rating,
-                                'pages': book.pages,
-                                'language': book.language,
-                                'description': book.description,
-                                'imagePath': book.imagePath,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 120,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: NetworkImage(book.imagePath),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    book.title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    "By ${book.author}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.bookmark,
+                                color: Colors.green,
+                              ),
+                              onPressed: () {
+                                context
+                                    .read<EbookBloc>()
+                                    .add(ToggleBookmark(bookId: book.id));
                               },
                             ),
-                          ),
-                        );
-                      },
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },

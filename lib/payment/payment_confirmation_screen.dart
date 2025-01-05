@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
+import 'package:flutter_ebook_store/bloc/cart_event.dart';
+import 'package:flutter_ebook_store/screen/reading_screen.dart';
 import '../models/ebook_models.dart';
 
 class PaymentConfirmationScreen extends StatelessWidget {
   final List<EbookModel> purchasedBooks;
-  final Function(List<EbookModel>) onPurchaseComplete;
 
   const PaymentConfirmationScreen({
     super.key,
     required this.purchasedBooks,
-    required this.onPurchaseComplete,
+    required Function(List<EbookModel> p1) onPurchaseComplete,
   });
 
   @override
@@ -35,9 +38,19 @@ class PaymentConfirmationScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                onPurchaseComplete(purchasedBooks);
+                context.read<CartBloc>().add(CompletePurchase(purchasedBooks));
 
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReadingScreen(
+                      purchasedBooks: purchasedBooks,
+                      onBackToExplore: () {
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      },
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

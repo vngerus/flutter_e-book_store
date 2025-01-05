@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ebook_store/screen/bookmark_screen.dart';
 import 'package:flutter_ebook_store/screen/home_screen.dart';
 import 'package:flutter_ebook_store/screen/reading_screen.dart';
+import 'package:flutter_ebook_store/widgets/app_colors.dart';
 import '../models/ebook_models.dart';
 
 class MainScreen extends StatefulWidget {
@@ -32,18 +33,13 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  Color _getBackgroundColor() {
-    if (selectedIndex == 0) return Colors.teal;
-    if (selectedIndex == 1) return Colors.blueGrey[50]!;
-    return Colors.grey[200]!;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          color: _getBackgroundColor(),
+        CustomPaint(
+          size: MediaQuery.of(context).size,
+          painter: DottedBackgroundPainter(),
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -58,40 +54,58 @@ class _MainScreenState extends State<MainScreen> {
               BookmarkScreen(onBack: () => onItemTapped(0)),
             ],
           ),
-          bottomNavigationBar: Container(
-            height: 70,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
-              ),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Material(
+            elevation: 8,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(40),
+              topRight: Radius.circular(40),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _customBottomMenuItem(
-                  onPressed: () => onItemTapped(0),
-                  isActive: selectedIndex == 0,
-                  title: "Explore",
-                  icon: Icons.explore,
-                  activeColor: Colors.orange,
+            child: Container(
+              height: 100,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
                 ),
-                _customBottomMenuItem(
-                  onPressed: () => onItemTapped(1),
-                  isActive: selectedIndex == 1,
-                  title: "Reading",
-                  icon: Icons.menu_book,
-                  activeColor: Colors.orange,
-                ),
-                _customBottomMenuItem(
-                  onPressed: () => onItemTapped(2),
-                  isActive: selectedIndex == 2,
-                  title: "Bookmark",
-                  icon: Icons.bookmark_border,
-                  activeColor: Colors.orange,
-                ),
-              ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _customBottomMenuItem(
+                    onPressed: () => onItemTapped(0),
+                    isActive: selectedIndex == 0,
+                    title: "Explore",
+                    icon: selectedIndex == 0
+                        ? Icons.explore
+                        : Icons.explore_outlined,
+                    activeColor: Colors.orange,
+                  ),
+                  _customBottomMenuItem(
+                    onPressed: () => onItemTapped(1),
+                    isActive: selectedIndex == 1,
+                    title: "Reading",
+                    iconPath: selectedIndex == 1
+                        ? 'assets/icons/book-open-text.png'
+                        : 'assets/icons/book-open.png',
+                    activeColor: Colors.orange,
+                  ),
+                  _customBottomMenuItem(
+                    onPressed: () => onItemTapped(2),
+                    isActive: selectedIndex == 2,
+                    title: "Bookmark",
+                    icon: selectedIndex == 2
+                        ? Icons.bookmark
+                        : Icons.bookmark_outline,
+                    activeColor: Colors.orange,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -103,11 +117,12 @@ class _MainScreenState extends State<MainScreen> {
     required Function() onPressed,
     required bool isActive,
     required String title,
-    required IconData icon,
+    IconData? icon,
+    String? iconPath,
     required Color activeColor,
   }) {
     return InkWell(
-      onTap: () => onPressed(),
+      onTap: onPressed,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -115,10 +130,18 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: isActive ? activeColor : Colors.grey,
-            ),
+            if (iconPath != null)
+              Image.asset(
+                iconPath,
+                height: 24,
+                width: 24,
+                color: isActive ? activeColor : Colors.grey,
+              )
+            else
+              Icon(
+                icon,
+                color: isActive ? activeColor : Colors.grey,
+              ),
             const SizedBox(height: 4),
             Text(
               title,
@@ -133,4 +156,25 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+}
+
+class DottedBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColor.bg1
+      ..style = PaintingStyle.fill;
+
+    const double spacing = 3;
+    const double radius = 3;
+
+    for (double y = 0; y < size.height; y += spacing) {
+      for (double x = 0; x < size.width; x += spacing) {
+        canvas.drawCircle(Offset(x, y), radius, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

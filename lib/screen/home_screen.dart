@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ebook_store/bloc/cart_bloc.dart';
+import 'package:flutter_ebook_store/bloc/cart_state.dart';
 import 'package:flutter_ebook_store/models/ebook_models.dart';
 import 'package:flutter_ebook_store/widgets/book_carousel.dart';
 import 'package:flutter_ebook_store/widgets/continue_reading_widget.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_ebook_store/bloc/e_book_bloc.dart';
 import 'package:flutter_ebook_store/bloc/e_book_state.dart';
 import 'package:flutter_ebook_store/screen/book_manager_screen.dart';
 import 'package:flutter_ebook_store/screen/shopping_cart_screen.dart';
+import 'package:flutter_ebook_store/widgets/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(List<EbookModel>) onPurchaseComplete;
@@ -21,10 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.transparent,
       appBar: _buildAppBar(context),
       body: Stack(
         children: [
+          CustomPaint(
+            size: MediaQuery.of(context).size,
+            painter: DottedBackgroundPainter(),
+          ),
           Column(
             children: [
               const SizedBox(height: 16),
@@ -69,9 +76,13 @@ class _HomeScreenState extends State<HomeScreen> {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColor.bg2,
       leading: IconButton(
-        icon: const Icon(Icons.grid_view, color: Colors.black),
+        icon: Image.asset(
+          'assets/icons/settings.png',
+          height: 24,
+          width: 24,
+        ),
         onPressed: () {
           Navigator.push(
             context,
@@ -82,22 +93,70 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.shopping_cart, color: Colors.black),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ShoppingCartScreen(
-                  onPurchaseComplete: widget.onPurchaseComplete,
-                ),
+        BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            int totalBooksCount = 0;
+
+            if (state is CartLoaded) {
+              totalBooksCount = state.cartItems.fold(
+                0,
+                (sum, item) => sum + item.quantity,
+              );
+            }
+
+            return IconButton(
+              icon: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Image.asset(
+                    'assets/icons/shopping-cart.png',
+                    height: 24,
+                    width: 24,
+                  ),
+                  if (totalBooksCount > 0)
+                    Positioned(
+                      right: -6,
+                      top: -6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '$totalBooksCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShoppingCartScreen(
+                      onPurchaseComplete: widget.onPurchaseComplete,
+                    ),
+                  ),
+                );
+              },
             );
           },
         ),
-        const CircleAvatar(
-          backgroundColor: Colors.blue,
-          child: Text(
+        CircleAvatar(
+          backgroundColor: AppColor.bg1,
+          child: const Text(
             "AS",
             style: TextStyle(color: Colors.white),
           ),
@@ -124,4 +183,25 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class DottedBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColor.bg2
+      ..style = PaintingStyle.fill;
+
+    const double spacing = 3;
+    const double radius = 3;
+
+    for (double y = 0; y < size.height; y += spacing) {
+      for (double x = 0; x < size.width; x += spacing) {
+        canvas.drawCircle(Offset(x, y), radius, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

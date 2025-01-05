@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/ebook_models.dart';
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_state.dart';
 import 'reading_detail_screen.dart';
 
-class ReadingScreen extends StatefulWidget {
-  final List<EbookModel> purchasedBooks;
+class ReadingScreen extends StatelessWidget {
   final VoidCallback onBackToExplore;
 
   const ReadingScreen({
     super.key,
-    required this.purchasedBooks,
     required this.onBackToExplore,
+    required List<EbookModel> purchasedBooks,
   });
-
-  @override
-  _ReadingScreenState createState() => _ReadingScreenState();
-}
-
-class _ReadingScreenState extends State<ReadingScreen> {
-  final Set<String> _currentlyReading = {};
 
   @override
   Widget build(BuildContext context) {
@@ -28,22 +23,27 @@ class _ReadingScreenState extends State<ReadingScreen> {
         backgroundColor: Colors.teal,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: widget.onBackToExplore,
+          onPressed: onBackToExplore,
         ),
       ),
-      body: widget.purchasedBooks.isEmpty
-          ? const Center(
-              child: Text(
-                "No books available.",
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-          : ListView.builder(
+      body: BlocBuilder<CartBloc, CartState>(
+        builder: (context, state) {
+          if (state is CartLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is PurchasedBooksLoaded &&
+              state.purchasedBooks.isNotEmpty) {
+            final purchasedBooks = state.purchasedBooks;
+
+            return ListView.builder(
               padding: const EdgeInsets.all(16.0),
-              itemCount: widget.purchasedBooks.length,
+              itemCount: purchasedBooks.length,
               itemBuilder: (context, index) {
-                final book = widget.purchasedBooks[index];
-                final bool isReading = _currentlyReading.contains(book.id);
+                final cartItem = purchasedBooks[index];
+                final book = cartItem.book;
+                final progress = cartItem.progress;
+                final bool isReading = progress > 0 && progress < 1.0;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -108,24 +108,25 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              LinearProgressIndicator(
+                                value: progress,
+                                backgroundColor: Colors.grey[200],
+                                color: Colors.teal,
+                              ),
                             ],
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              _currentlyReading.add(book.id);
-                            });
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ReadingDetailScreen(
                                   book: book,
                                   onProgressUpdated: (double newProgress) {
-                                    setState(() {
-                                      widget.purchasedBooks[index] =
-                                          book.copyWith(progress: newProgress);
-                                    });
+                                    context.read<CartBloc>().updateBookProgress(
+                                        book.id, newProgress);
                                   },
                                 ),
                               ),
@@ -155,7 +156,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
                   ),
                 );
               },
-            ),
+            );
+          } else {
+            return const Center(
+              child: Text(
+                "No books available.",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

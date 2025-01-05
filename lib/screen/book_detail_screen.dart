@@ -242,11 +242,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       const SizedBox(width: 16),
                       IconButton(
                         icon: const Icon(Icons.remove),
-                        onPressed: () {
-                          setState(() {
-                            if (quantity > 1) quantity--;
-                          });
-                        },
+                        onPressed: quantity > 1
+                            ? () => setState(() => quantity--)
+                            : null,
                       ),
                       Text(
                         "$quantity",
@@ -258,11 +256,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {
-                          setState(() {
-                            quantity++;
-                          });
-                        },
+                        onPressed: quantity < 5
+                            ? () => setState(() => quantity++)
+                            : null,
                       ),
                     ],
                   ),
