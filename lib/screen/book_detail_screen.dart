@@ -70,7 +70,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         elevation: 0,
         backgroundColor: AppColor.bg1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black54),
+          icon: Icon(Icons.arrow_back, color: AppColor.texto3),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -85,7 +85,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.black54),
+            icon: Icon(Icons.share, color: AppColor.texto3),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -147,9 +147,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         Expanded(
                           child: Text(
                             bookData['title'] ?? 'Unknown Title',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
+                              color: AppColor.texto3,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -183,9 +184,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     ),
                     Text(
                       "by ${bookData['author'] ?? 'Unknown Author'}",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey,
+                        color: AppColor.texto2,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -201,24 +202,31 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           InfoTile(
                             label: "Rating",
                             value: "${bookData['rating'] ?? '0.0'}",
+                            labelColor: AppColor.texto2,
+                            valueColor: AppColor.texto3,
                           ),
                           InfoTile(
                             label: "Pages",
                             value: "${bookData['pages'] ?? '0'}",
+                            labelColor: AppColor.texto2,
+                            valueColor: AppColor.texto3,
                           ),
                           InfoTile(
                             label: "Language",
                             value: bookData['language'] ?? 'Unknown',
+                            labelColor: AppColor.texto2,
+                            valueColor: AppColor.texto3,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       "Description",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: AppColor.texto3,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -227,9 +235,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         child: Text(
                           bookData['description'] ??
                               'No description available.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             height: 1.5,
+                            color: AppColor.texto2,
                           ),
                         ),
                       ),
@@ -396,8 +405,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 class InfoTile extends StatelessWidget {
   final String label;
   final String value;
+  final Color labelColor;
+  final Color valueColor;
 
-  const InfoTile({super.key, required this.label, required this.value});
+  const InfoTile({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.labelColor,
+    required this.valueColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -405,16 +422,17 @@ class InfoTile extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
+            color: labelColor,
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
+            color: valueColor,
           ),
         ),
       ],
