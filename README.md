@@ -121,7 +121,7 @@ org.gradle.java.home=C:\Program Files\Java\jdk-17 (acá cambiar por tu path)
 1. **Clonar el repositorio**:
 
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
+   git clone https://github.com/vngerus/flutter_e-book_store.git
    cd flutter_ebook_store
    ```
 
