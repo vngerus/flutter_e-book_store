@@ -8,7 +8,9 @@ Esta aplicación fue desarrollada como parte de una evaluación final en el marc
 
 El desarrollo de la aplicación se llevó a cabo utilizando Flutter, con el patrón BLoC para el manejo eficiente de estados y Firebase como backend, asegurando un correcto funcionamiento de las operaciones CRUD y el almacenamiento de datos.
 
-[Ver video en YouTube](https://youtu.be/JVCBhe9LMSc)
+### Mira la demo: 
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://youtu.be/JVCBhe9LMSc)
+
 
 
 ## Evaluación del Proyecto
