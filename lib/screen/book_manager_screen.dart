@@ -274,13 +274,17 @@ class _BookManagerScreenState extends State<BookManagerScreen> {
   }
 
   void _showBookForm(BuildContext context, {EbookModel? book}) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return Dialog(
-          backgroundColor: AppColor.bg1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+        return Padding(
+          padding: EdgeInsets.only(
+            top: 16.0,
+            left: 16.0,
+            right: 16.0,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
           ),
           child: BookFormWidget(
             book: book,
