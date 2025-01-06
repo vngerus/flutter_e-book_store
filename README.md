@@ -27,6 +27,7 @@ Este proyecto es parte de una evaluación final para medir conocimientos en Flut
 3. **Gestión de Libros**: Crear, editar y eliminar libros (modo administrador o mantenedor).
 4. **Favoritos**: Marcar libros como favoritos para encontrarlos rápidamente.
 5. **Gestión de Imágenes**: Cargar y mostrar imágenes de portada de los libros.
+6. **Administración de datos**: Firebase como gestor del CRUD.
 
 ## Flujo de la Aplicación
 
