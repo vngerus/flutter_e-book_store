@@ -25,8 +25,8 @@ class ContinueReadingWidget extends StatelessWidget {
           }
 
           return DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.4,
+            initialChildSize: 0.26,
+            minChildSize: 0.26,
             maxChildSize: 0.8,
             builder: (BuildContext context, ScrollController scrollController) {
               return ClipRRect(

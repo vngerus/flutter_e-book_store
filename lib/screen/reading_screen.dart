@@ -41,9 +41,17 @@ class ReadingScreen extends StatelessWidget {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          } else if (state is PurchasedBooksLoaded &&
-              state.purchasedBooks.isNotEmpty) {
+          } else if (state is PurchasedBooksLoaded) {
             final purchasedBooks = state.purchasedBooks;
+
+            if (purchasedBooks.isEmpty) {
+              return const Center(
+                child: Text(
+                  "You haven't purchased any books yet.",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            }
 
             return ListView.builder(
               padding: const EdgeInsets.all(16.0),
