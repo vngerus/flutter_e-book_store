@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ebook_store/widgets/book_form_widget.dart';
+import 'add_book_screen.dart';
 import '../bloc/e_book_bloc.dart';
 import '../bloc/e_book_event.dart';
 import '../bloc/e_book_state.dart';
@@ -117,11 +117,18 @@ class _BookManagerScreenState extends State<BookManagerScreen> {
                           ),
                           confirmDismiss: (direction) async {
                             if (direction == DismissDirection.startToEnd) {
-                              _showBookForm(context, book: book);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddBookScreen(
+                                    book: book,
+                                  ),
+                                ),
+                              );
                               return false;
                             } else if (direction ==
                                 DismissDirection.endToStart) {
-                              bool confirmDelete =
+                              final confirmDelete =
                                   await _confirmDelete(context);
                               if (confirmDelete) {
                                 context
@@ -190,31 +197,6 @@ class _BookManagerScreenState extends State<BookManagerScreen> {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit,
-                                            color: Colors.blue),
-                                        onPressed: () =>
-                                            _showBookForm(context, book: book),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(Icons.delete,
-                                            color: AppColor.coral),
-                                        onPressed: () async {
-                                          bool confirmDelete =
-                                              await _confirmDelete(context);
-                                          if (confirmDelete) {
-                                            context
-                                                .read<EbookBloc>()
-                                                .add(DeleteEbook(book.id));
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
                                 ],
                               ),
                             ),
@@ -238,7 +220,12 @@ class _BookManagerScreenState extends State<BookManagerScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showBookForm(context),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddBookScreen()),
+          );
+        },
         backgroundColor: AppColor.bg1,
         child: const Icon(Icons.add),
       ),
@@ -271,54 +258,6 @@ class _BookManagerScreenState extends State<BookManagerScreen> {
           ),
         ) ??
         false;
-  }
-
-  void _showBookForm(BuildContext context, {EbookModel? book}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            top: 16.0,
-            left: 16.0,
-            right: 16.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
-          ),
-          child: BookFormWidget(
-            book: book,
-            onSubmit: (EbookModel newBook) {
-              if (book == null) {
-                context.read<EbookBloc>().add(AddEbook(
-                      title: newBook.title,
-                      author: newBook.author,
-                      price: newBook.price,
-                      rating: newBook.rating,
-                      pages: newBook.pages,
-                      language: newBook.language,
-                      description: newBook.description,
-                      imagePath: newBook.imagePath,
-                    ));
-              } else {
-                context.read<EbookBloc>().add(UpdateEbook(
-                      id: book.id,
-                      title: newBook.title,
-                      author: newBook.author,
-                      price: newBook.price,
-                      rating: newBook.rating,
-                      pages: newBook.pages,
-                      language: newBook.language,
-                      description: newBook.description,
-                      imagePath: newBook.imagePath,
-                    ));
-              }
-              Navigator.of(context).pop();
-            },
-          ),
-        );
-      },
-    );
   }
 
   List<String> _getUniqueAuthors(List<EbookModel> ebooks) {
